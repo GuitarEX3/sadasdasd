@@ -102,7 +102,9 @@
 <div class="section active" id="sec1">
   <p class="section-title">เลือกห้องพัก</p>
   <button class="refresh-btn" onclick="reloadRooms()">🔄 โหลดสถานะห้องใหม่</button>
-  <div class="rooms" id="roomList"><div style="text-align:center;padding:40px;color:var(--muted)">กำลังโหลด...</div></div>
+  <div class="rooms" id="roomList">
+    <div style="text-align:center;padding:40px;color:var(--muted)">กำลังโหลด...</div>
+  </div>
   <div class="error-msg" id="err1">กรุณาเลือกห้องก่อน</div>
 </div>
 
@@ -171,14 +173,11 @@
 </div>
 
 <script>
-const LIFF_ID  = '2009583138-fYwhfeRc';
-const GAS_URL  = 'https://script.google.com/macros/s/AKfycbxJvHSQjKoL56G7FYubSxGwchYjlEgwngW-33B2rU6okQrjQWrCX9fYKVbG6i5gqNTD/exec';
+const LIFF_ID = '2009583138-fYwhfeRc';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxGgkzLEAGuutxnQ3CklB6TgvXtaOlfVSPKaCMZOXw7BUPKWexhqbQP0q3K2yCEDmTB/exec';
 
 let currentStep = 1, selectedRoom = null, userId = null, userName = null;
 
-// ─────────────────────────────────────────────
-// Init LIFF
-// ─────────────────────────────────────────────
 async function initLiff() {
   try {
     await liff.init({ liffId: LIFF_ID });
@@ -195,41 +194,38 @@ async function initLiff() {
   }
 }
 
-// ─────────────────────────────────────────────
-// โหลดห้อง — ส่ง checkIn/checkOut ถ้ามี
-// ─────────────────────────────────────────────
+// ✅ ดึงจาก GAS จริงเท่านั้น ไม่มี default hardcode + บังคับ no-cache
 async function loadRooms(checkIn, checkOut) {
-  // แสดงค่า default ก่อนรอ API
-  renderRooms([
-    { id: 'A', available: true,  desc: 'ห้องมาตรฐาน · 1 เตียง' },
-    { id: 'B', available: true,  desc: 'ห้องดีลักซ์ · 1 เตียงใหญ่' },
-    { id: 'C', available: true,  desc: 'ห้องสวีท · 2 เตียง' },
-  ]);
+  document.getElementById('roomList').innerHTML =
+    '<div style="text-align:center;padding:40px;color:var(--muted)">กำลังโหลด...</div>';
 
   try {
     let url = `${GAS_URL}?action=getRooms`;
     if (checkIn && checkOut) {
       url += `&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}`;
     }
-    const res  = await fetch(url);
+    url += `&t=${Date.now()}`; // ✅ บังคับไม่ cache
+
+    const res  = await fetch(url, { cache: 'no-store' }); // ✅ no-store
     const data = await res.json();
-    if (data.rooms) renderRooms(data.rooms);
+
+    if (data.rooms) {
+      renderRooms(data.rooms);
+    } else {
+      throw new Error('no rooms data');
+    }
   } catch (e) {
     console.error('loadRooms error:', e);
+    document.getElementById('roomList').innerHTML =
+      '<div style="text-align:center;padding:20px;color:#f87171">❌ โหลดสถานะห้องไม่ได้<br><small style="color:var(--muted)">กด 🔄 เพื่อลองใหม่</small></div>';
   }
 }
 
-// ปุ่ม refresh บนหน้า step 1
 async function reloadRooms() {
-  document.getElementById('roomList').innerHTML =
-    '<div style="text-align:center;padding:40px;color:var(--muted)">กำลังโหลด...</div>';
   selectedRoom = null;
   await loadRooms();
 }
 
-// ─────────────────────────────────────────────
-// Render รายการห้อง
-// ─────────────────────────────────────────────
 function renderRooms(rooms) {
   const icons = { A: '🛏️', B: '🛎️', C: '✨' };
   document.getElementById('roomList').innerHTML = rooms.map(r => `
@@ -252,9 +248,6 @@ function selectRoom(room, el) {
   document.getElementById('err1').classList.remove('show');
 }
 
-// ─────────────────────────────────────────────
-// คำนวณจำนวนคืน
-// ─────────────────────────────────────────────
 function calcNights() {
   const ci   = document.getElementById('checkIn').value;
   const co   = document.getElementById('checkOut').value;
@@ -269,9 +262,6 @@ function calcNights() {
   }
 }
 
-// ─────────────────────────────────────────────
-// ไปหน้าถัดไป
-// ─────────────────────────────────────────────
 async function goNext() {
   if (currentStep === 1) {
     if (!selectedRoom) { document.getElementById('err1').classList.add('show'); return; }
@@ -284,22 +274,15 @@ async function goNext() {
     const diff = (new Date(co) - new Date(ci)) / 86400000;
     if (!ci || !co || diff <= 0) { document.getElementById('err2').classList.add('show'); return; }
 
-    // ✅ โหลดสถานะห้องใหม่ตามช่วงวันที่เลือก ก่อนไป step 3
+    // ✅ โหลดสถานะห้องตามช่วงวันที่จริงก่อนไป step 3
     showLoading(true, 'ตรวจสอบห้องว่าง...');
     await loadRooms(ci, co);
     showLoading(false);
 
     // เช็คว่าห้องที่เลือกยังว่างอยู่ไหม
-    const cards = document.querySelectorAll('.room-card');
-    let stillAvailable = true;
-    cards.forEach(card => {
-      if (card.classList.contains('selected') && card.classList.contains('unavailable')) {
-        stillAvailable = false;
-      }
-    });
-    if (!stillAvailable) {
-      document.getElementById('err2').classList.remove('show');
-      alert(`❌ ห้อง ${selectedRoom} ไม่ว่างในช่วงวันที่เลือก กรุณาเลือกห้องหรือวันที่ใหม่`);
+    const selectedCard = document.querySelector('.room-card.selected');
+    if (!selectedCard || selectedCard.classList.contains('unavailable')) {
+      alert(`❌ ห้อง ${selectedRoom} ไม่ว่างในช่วงวันที่เลือก\nกรุณาเลือกห้องหรือวันที่ใหม่`);
       setStep(1);
       document.getElementById('btnNext').textContent = 'เลือกห้อง →';
       return;
@@ -338,9 +321,6 @@ function setStep(n) {
   document.getElementById('btnBack').style.display = n > 1 ? 'block' : 'none';
 }
 
-// ─────────────────────────────────────────────
-// ยืนยันการจอง — ส่งผ่าน liff.sendMessages
-// ─────────────────────────────────────────────
 async function confirmBooking() {
   const ci     = document.getElementById('checkIn').value;
   const co     = document.getElementById('checkOut').value;
@@ -355,18 +335,15 @@ async function confirmBooking() {
         text: `จอง : ${selectedRoom} | ${ci} | ${co} | ${ciTime} | ${coTime}`
       }]);
 
-      // ✅ รอให้ Bot มีเวลาสร้าง event ใน Calendar
       setLoadingText('กำลังบันทึกการจอง...');
       await new Promise(r => setTimeout(r, 3000));
 
-      // ✅ Refresh สถานะห้องใหม่ (ตอนนี้ควรแสดงว่าเต็มแล้ว)
       setLoadingText('อัปเดตสถานะห้อง...');
       await loadRooms(ci, co);
 
       showLoading(false);
       showSuccess();
     } else {
-      // ทดสอบนอก LINE
       showLoading(false);
       alert('⚠️ ทดสอบได้เฉพาะใน LINE เท่านั้น\n\nข้อมูลที่จะส่ง:\nจอง : ' + selectedRoom + ' | ' + ci + ' | ' + co + ' | ' + ciTime + ' | ' + coTime);
     }
@@ -380,9 +357,6 @@ async function confirmBooking() {
   }
 }
 
-// ─────────────────────────────────────────────
-// UI helpers
-// ─────────────────────────────────────────────
 function showSuccess() {
   document.querySelector('.section.active')?.classList.remove('active');
   document.getElementById('successScreen').classList.add('show');
@@ -399,9 +373,6 @@ function setLoadingText(text) {
   document.getElementById('loadingText').textContent = text;
 }
 
-// ─────────────────────────────────────────────
-// Start
-// ─────────────────────────────────────────────
 initLiff();
 </script>
 </body>
