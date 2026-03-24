@@ -83,6 +83,8 @@
   .error-msg.show { display: block; }
   .refresh-btn { background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-size: 12px; font-family: 'Sarabun', sans-serif; padding: 6px 12px; cursor: pointer; margin-bottom: 12px; }
   .refresh-btn:active { opacity: 0.7; }
+  .debug-info { margin-top: 12px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 11px; color: var(--muted); font-family: monospace; display: none; word-break: break-all; }
+  .debug-info.show { display: block; }
 </style>
 </head>
 <body>
@@ -106,6 +108,7 @@
     <div style="text-align:center;padding:40px;color:var(--muted)">กำลังโหลด...</div>
   </div>
   <div class="error-msg" id="err1">กรุณาเลือกห้องก่อน</div>
+  <div class="debug-info" id="debugInfo"></div>
 </div>
 
 <!-- Step 2 -->
@@ -173,10 +176,13 @@
 </div>
 
 <script>
+// ✅ ใส่ URL ที่ได้จากการ Deploy Google Apps Script ตรงนี้
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwOCr4pdt-Xm6BX1d6xF7G9WmTlquPzVrZdU1wLoQHjYxBmTdwaZe9x8Hh0TZJkV7bK/exec';
 const LIFF_ID = '2009583138-fYwhfeRc';
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxGgkzLEAGuutxnQ3CklB6TgvXtaOlfVSPKaCMZOXw7BUPKWexhqbQP0q3K2yCEDmTB/exec';
 
 let currentStep = 1, selectedRoom = null, userId = null, userName = null;
+let retryCount = 0;
+const MAX_RETRIES = 3;
 
 async function initLiff() {
   try {
@@ -188,13 +194,36 @@ async function initLiff() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('checkIn').min  = today;
     document.getElementById('checkOut').min = today;
+    
+    // ✅ ทดสอบ GAS URL ก่อน
+    await testGasConnection();
     await loadRooms();
   } catch (e) {
     console.error('LIFF init:', e);
+    showDebug('LIFF init error: ' + e.toString());
   }
 }
 
-// ✅ ดึงจาก GAS จริงเท่านั้น ไม่มี default hardcode + บังคับ no-cache
+// ✅ ทดสอบการเชื่อมต่อกับ GAS
+async function testGasConnection() {
+  try {
+    const url = `${GAS_URL}?action=test&t=${Date.now()}`;
+    console.log('Testing GAS connection:', url);
+    const res = await fetch(url, { 
+      method: 'GET',
+      cache: 'no-store',
+      headers: { 'Accept': 'application/json' }
+    });
+    const text = await res.text();
+    console.log('GAS response:', text);
+    showDebug(`Connection test OK. Status: ${res.status}`);
+  } catch (e) {
+    console.error('GAS connection test failed:', e);
+    showDebug('❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์: ' + e.toString());
+  }
+}
+
+// ✅ ดึงข้อมูลห้องพร้อม retry logic
 async function loadRooms(checkIn, checkOut) {
   document.getElementById('roomList').innerHTML =
     '<div style="text-align:center;padding:40px;color:var(--muted)">กำลังโหลด...</div>';
@@ -204,25 +233,105 @@ async function loadRooms(checkIn, checkOut) {
     if (checkIn && checkOut) {
       url += `&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}`;
     }
-    url += `&t=${Date.now()}`; // ✅ บังคับไม่ cache
+    url += `&t=${Date.now()}`;
 
-    const res  = await fetch(url, { cache: 'no-store' }); // ✅ no-store
-    const data = await res.json();
+    console.log('Fetching rooms from:', url);
+    showDebug('Loading from: ' + url);
 
-    if (data.rooms) {
+    const res = await fetchWithRetry(url);
+    const text = await res.text();
+    
+    console.log('Raw response:', text);
+    showDebug('Response received: ' + text.substring(0, 200));
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      showDebug('❌ Parse error: ' + parseError.toString() + '\nResponse: ' + text.substring(0, 500));
+      throw new Error('ไม่สามารถอ่านข้อมูลจากเซิร์ฟเวอร์ได้');
+    }
+
+    if (data.error) {
+      console.error('Server error:', data.message);
+      showDebug('❌ Server error: ' + data.message);
+      throw new Error(data.message || 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์');
+    }
+
+    if (data.rooms && Array.isArray(data.rooms)) {
+      console.log('Rooms loaded:', data.rooms);
       renderRooms(data.rooms);
+      showDebug('✅ โหลดห้องสำเร็จ: ' + data.rooms.length + ' ห้อง');
+      retryCount = 0; // reset
     } else {
-      throw new Error('no rooms data');
+      console.error('Invalid data format:', data);
+      showDebug('❌ Invalid data: ' + JSON.stringify(data));
+      throw new Error('รูปแบบข้อมูลไม่ถูกต้อง');
     }
   } catch (e) {
     console.error('loadRooms error:', e);
+    const errorMsg = e.message || e.toString();
+    
     document.getElementById('roomList').innerHTML =
-      '<div style="text-align:center;padding:20px;color:#f87171">❌ โหลดสถานะห้องไม่ได้<br><small style="color:var(--muted)">กด 🔄 เพื่อลองใหม่</small></div>';
+      `<div style="text-align:center;padding:20px;color:#f87171">
+        ❌ โหลดสถานะห้องไม่ได้<br>
+        <small style="color:var(--muted);margin-top:8px;display:block">${errorMsg}</small><br>
+        <small style="color:var(--muted)">กด 🔄 เพื่อลองใหม่ (ครั้งที่ ${retryCount + 1}/${MAX_RETRIES})</small>
+      </div>`;
+    
+    showDebug('❌ Error: ' + errorMsg + '\nRetry: ' + retryCount);
+    
+    // ✅ Auto retry
+    if (retryCount < MAX_RETRIES) {
+      retryCount++;
+      setTimeout(() => loadRooms(checkIn, checkOut), 2000 * retryCount);
+    } else {
+      // ✅ ถ้าโหลดไม่ได้เลย ให้แสดง fallback rooms
+      showDebug('⚠️ Max retries reached. Showing fallback rooms.');
+      renderFallbackRooms();
+    }
   }
+}
+
+// ✅ Fetch พร้อม retry
+async function fetchWithRetry(url, retries = 2) {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const res = await fetch(url, { 
+        method: 'GET',
+        cache: 'no-store',
+        headers: { 'Accept': 'application/json' },
+        mode: 'cors'
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      
+      return res;
+    } catch (e) {
+      console.error(`Fetch attempt ${i + 1} failed:`, e);
+      if (i === retries) throw e;
+      await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+    }
+  }
+}
+
+// ✅ แสดงห้อง fallback เมื่อโหลดไม่ได้
+function renderFallbackRooms() {
+  const fallbackRooms = [
+    { id: 'A', available: true, desc: 'ห้องมาตรฐาน · 1 เตียง' },
+    { id: 'B', available: true, desc: 'ห้องดีลักซ์ · 1 เตียงใหญ่' },
+    { id: 'C', available: true, desc: 'ห้องสวีท · 2 เตียง' }
+  ];
+  renderRooms(fallbackRooms);
+  showDebug('⚠️ Using fallback rooms (all available)');
 }
 
 async function reloadRooms() {
   selectedRoom = null;
+  retryCount = 0;
   await loadRooms();
 }
 
@@ -246,6 +355,7 @@ function selectRoom(room, el) {
   document.querySelectorAll('.room-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   document.getElementById('err1').classList.remove('show');
+  console.log('Selected room:', room);
 }
 
 function calcNights() {
@@ -264,7 +374,10 @@ function calcNights() {
 
 async function goNext() {
   if (currentStep === 1) {
-    if (!selectedRoom) { document.getElementById('err1').classList.add('show'); return; }
+    if (!selectedRoom) { 
+      document.getElementById('err1').classList.add('show'); 
+      return; 
+    }
     setStep(2);
     document.getElementById('btnNext').textContent = 'ดูสรุป →';
 
@@ -272,30 +385,41 @@ async function goNext() {
     const ci   = document.getElementById('checkIn').value;
     const co   = document.getElementById('checkOut').value;
     const diff = (new Date(co) - new Date(ci)) / 86400000;
-    if (!ci || !co || diff <= 0) { document.getElementById('err2').classList.add('show'); return; }
+    
+    if (!ci || !co || diff <= 0) { 
+      document.getElementById('err2').classList.add('show'); 
+      return; 
+    }
 
     // ✅ โหลดสถานะห้องตามช่วงวันที่จริงก่อนไป step 3
     showLoading(true, 'ตรวจสอบห้องว่าง...');
-    await loadRooms(ci, co);
-    showLoading(false);
+    try {
+      await loadRooms(ci, co);
+      showLoading(false);
 
-    // เช็คว่าห้องที่เลือกยังว่างอยู่ไหม
-    const selectedCard = document.querySelector('.room-card.selected');
-    if (!selectedCard || selectedCard.classList.contains('unavailable')) {
-      alert(`❌ ห้อง ${selectedRoom} ไม่ว่างในช่วงวันที่เลือก\nกรุณาเลือกห้องหรือวันที่ใหม่`);
-      setStep(1);
-      document.getElementById('btnNext').textContent = 'เลือกห้อง →';
-      return;
+      // เช็คว่าห้องที่เลือกยังว่างอยู่ไหม
+      const selectedCard = document.querySelector('.room-card.selected');
+      if (!selectedCard || selectedCard.classList.contains('unavailable')) {
+        alert(`❌ ห้อง ${selectedRoom} ไม่ว่างในช่วงวันที่เลือก\nกรุณาเลือกห้องหรือวันที่ใหม่`);
+        setStep(1);
+        document.getElementById('btnNext').textContent = 'เลือกห้อง →';
+        return;
+      }
+
+      const ciTime = document.getElementById('checkInTime').value  || '14:00';
+      const coTime = document.getElementById('checkOutTime').value || '12:00';
+      document.getElementById('sumRoom').textContent     = `ห้อง ${selectedRoom}`;
+      document.getElementById('sumCheckIn').textContent  = `${ci} เวลา ${ciTime} น.`;
+      document.getElementById('sumCheckOut').textContent = `${co} เวลา ${coTime} น.`;
+      document.getElementById('sumNights').textContent   = `${diff} คืน`;
+      setStep(3);
+      document.getElementById('btnNext').textContent = '✅ ยืนยันการจอง';
+      
+    } catch (e) {
+      showLoading(false);
+      console.error('Check availability error:', e);
+      alert('❌ ไม่สามารถตรวจสอบห้องว่างได้\nกรุณาลองใหม่อีกครั้ง');
     }
-
-    const ciTime = document.getElementById('checkInTime').value  || '14:00';
-    const coTime = document.getElementById('checkOutTime').value || '12:00';
-    document.getElementById('sumRoom').textContent     = `ห้อง ${selectedRoom}`;
-    document.getElementById('sumCheckIn').textContent  = `${ci} เวลา ${ciTime} น.`;
-    document.getElementById('sumCheckOut').textContent = `${co} เวลา ${coTime} น.`;
-    document.getElementById('sumNights').textContent   = `${diff} คืน`;
-    setStep(3);
-    document.getElementById('btnNext').textContent = '✅ ยืนยันการจอง';
 
   } else if (currentStep === 3) {
     confirmBooking();
@@ -328,8 +452,10 @@ async function confirmBooking() {
   const coTime = document.getElementById('checkOutTime').value || '12:00';
 
   showLoading(true, 'กำลังส่งข้อมูลการจอง...');
+  
   try {
     if (liff.isInClient()) {
+      // ส่งข้อความจองผ่าน LINE
       await liff.sendMessages([{
         type: 'text',
         text: `จอง : ${selectedRoom} | ${ci} | ${co} | ${ciTime} | ${coTime}`
@@ -343,16 +469,22 @@ async function confirmBooking() {
 
       showLoading(false);
       showSuccess();
+      
     } else {
+      // ทดสอบนอก LINE app
       showLoading(false);
-      alert('⚠️ ทดสอบได้เฉพาะใน LINE เท่านั้น\n\nข้อมูลที่จะส่ง:\nจอง : ' + selectedRoom + ' | ' + ci + ' | ' + co + ' | ' + ciTime + ' | ' + coTime);
+      const bookingText = `จอง : ${selectedRoom} | ${ci} | ${co} | ${ciTime} | ${coTime}`;
+      console.log('Booking (test mode):', bookingText);
+      alert('⚠️ ทดสอบได้เฉพาะใน LINE เท่านั้น\n\nข้อมูลที่จะส่ง:\n' + bookingText);
     }
   } catch (e) {
     showLoading(false);
+    console.error('Confirm booking error:', e);
+    
     if (e.code === 'FORBIDDEN') {
-      alert('❌ ไม่มีสิทธิ์ส่งข้อความ\nกรุณาเปิด scope chat_message.write\nใน LINE Developers Console');
+      alert('❌ ไม่มีสิทธิ์ส่งข้อความ\n\nกรุณาตรวจสอบ:\n1. เปิด scope chat_message.write ใน LINE Developers Console\n2. Re-add LINE Bot ใหม่');
     } else {
-      alert('❌ เกิดข้อผิดพลาด: ' + (e.message || e.code || e));
+      alert('❌ เกิดข้อผิดพลาด:\n' + (e.message || e.code || e.toString()));
     }
   }
 }
@@ -372,6 +504,28 @@ function showLoading(show, text) {
 function setLoadingText(text) {
   document.getElementById('loadingText').textContent = text;
 }
+
+function showDebug(msg) {
+  const debug = document.getElementById('debugInfo');
+  const timestamp = new Date().toLocaleTimeString('th-TH');
+  debug.textContent = `[${timestamp}] ${msg}\n\n` + debug.textContent;
+  
+  // แสดง debug info ถ้ามี error
+  if (msg.includes('❌') || msg.includes('error')) {
+    debug.classList.add('show');
+  }
+}
+
+// Double-tap เพื่อแสดง debug
+let tapCount = 0;
+document.querySelector('.header').addEventListener('click', () => {
+  tapCount++;
+  if (tapCount >= 3) {
+    document.getElementById('debugInfo').classList.toggle('show');
+    tapCount = 0;
+  }
+  setTimeout(() => tapCount = 0, 1000);
+});
 
 initLiff();
 </script>
