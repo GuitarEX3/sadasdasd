@@ -78,8 +78,11 @@
   .loading-overlay.show { display: flex; }
   .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { color: var(--muted); font-size: 14px; }
   .error-msg { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 10px; padding: 12px 16px; color: #f87171; font-size: 13px; margin-top: 12px; display: none; }
   .error-msg.show { display: block; }
+  .refresh-btn { background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-size: 12px; font-family: 'Sarabun', sans-serif; padding: 6px 12px; cursor: pointer; margin-bottom: 12px; }
+  .refresh-btn:active { opacity: 0.7; }
 </style>
 </head>
 <body>
@@ -98,6 +101,7 @@
 <!-- Step 1 -->
 <div class="section active" id="sec1">
   <p class="section-title">เลือกห้องพัก</p>
+  <button class="refresh-btn" onclick="reloadRooms()">🔄 โหลดสถานะห้องใหม่</button>
   <div class="rooms" id="roomList"><div style="text-align:center;padding:40px;color:var(--muted)">กำลังโหลด...</div></div>
   <div class="error-msg" id="err1">กรุณาเลือกห้องก่อน</div>
 </div>
@@ -163,52 +167,80 @@
 
 <div class="loading-overlay" id="loading">
   <div class="spinner"></div>
-  <p style="color:var(--muted);font-size:14px">กำลังดำเนินการ...</p>
+  <p class="loading-text" id="loadingText">กำลังดำเนินการ...</p>
 </div>
 
 <script>
-const LIFF_ID = '2009583138-fYwhfeRc';
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxGgkzLEAGuutxnQ3CklB6TgvXtaOlfVSPKaCMZOXw7BUPKWexhqbQP0q3K2yCEDmTB/exec';
+const LIFF_ID  = '2009583138-fYwhfeRc';
+const GAS_URL  = 'https://script.google.com/macros/s/AKfycbxGgkzLEAGuutxnQ3CklB6TgvXtaOlfVSPKaCMZOXw7BUPKWexhqbQP0q3K2yCEDmTB/exec';
 
 let currentStep = 1, selectedRoom = null, userId = null, userName = null;
 
+// ─────────────────────────────────────────────
+// Init LIFF
+// ─────────────────────────────────────────────
 async function initLiff() {
   try {
     await liff.init({ liffId: LIFF_ID });
     if (!liff.isLoggedIn()) { liff.login(); return; }
     const profile = await liff.getProfile();
-    userId = profile.userId;
+    userId   = profile.userId;
     userName = profile.displayName;
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('checkIn').min = today;
+    document.getElementById('checkIn').min  = today;
     document.getElementById('checkOut').min = today;
     await loadRooms();
-  } catch (e) { console.error('LIFF init:', e); }
+  } catch (e) {
+    console.error('LIFF init:', e);
+  }
 }
 
-async function loadRooms() {
+// ─────────────────────────────────────────────
+// โหลดห้อง — ส่ง checkIn/checkOut ถ้ามี
+// ─────────────────────────────────────────────
+async function loadRooms(checkIn, checkOut) {
+  // แสดงค่า default ก่อนรอ API
   renderRooms([
     { id: 'A', available: true,  desc: 'ห้องมาตรฐาน · 1 เตียง' },
     { id: 'B', available: true,  desc: 'ห้องดีลักซ์ · 1 เตียงใหญ่' },
     { id: 'C', available: true,  desc: 'ห้องสวีท · 2 เตียง' },
   ]);
+
   try {
-    const res = await fetch(`${GAS_URL}?action=getRooms`);
+    let url = `${GAS_URL}?action=getRooms`;
+    if (checkIn && checkOut) {
+      url += `&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}`;
+    }
+    const res  = await fetch(url);
     const data = await res.json();
     if (data.rooms) renderRooms(data.rooms);
-  } catch (e) {}
+  } catch (e) {
+    console.error('loadRooms error:', e);
+  }
 }
 
+// ปุ่ม refresh บนหน้า step 1
+async function reloadRooms() {
+  document.getElementById('roomList').innerHTML =
+    '<div style="text-align:center;padding:40px;color:var(--muted)">กำลังโหลด...</div>';
+  selectedRoom = null;
+  await loadRooms();
+}
+
+// ─────────────────────────────────────────────
+// Render รายการห้อง
+// ─────────────────────────────────────────────
 function renderRooms(rooms) {
   const icons = { A: '🛏️', B: '🛎️', C: '✨' };
   document.getElementById('roomList').innerHTML = rooms.map(r => `
-    <div class="room-card ${r.available ? '' : 'unavailable'}" onclick="${r.available ? `selectRoom('${r.id}',this)` : ''}">
-      <div class="room-icon">${icons[r.id]||'🏠'}</div>
+    <div class="room-card ${r.available ? '' : 'unavailable'} ${selectedRoom === r.id ? 'selected' : ''}"
+         onclick="${r.available ? `selectRoom('${r.id}',this)` : ''}">
+      <div class="room-icon">${icons[r.id] || '🏠'}</div>
       <div class="room-info">
         <div class="room-name">ห้อง ${r.id}</div>
         <div class="room-desc">${r.desc}</div>
       </div>
-      <span class="room-status ${r.available?'':'busy'}">${r.available?'ว่าง':'เต็ม'}</span>
+      <span class="room-status ${r.available ? '' : 'busy'}">${r.available ? 'ว่าง' : 'เต็ม'}</span>
       <span class="room-check">✓</span>
     </div>`).join('');
 }
@@ -220,38 +252,67 @@ function selectRoom(room, el) {
   document.getElementById('err1').classList.remove('show');
 }
 
+// ─────────────────────────────────────────────
+// คำนวณจำนวนคืน
+// ─────────────────────────────────────────────
 function calcNights() {
-  const ci = document.getElementById('checkIn').value;
-  const co = document.getElementById('checkOut').value;
+  const ci   = document.getElementById('checkIn').value;
+  const co   = document.getElementById('checkOut').value;
   const diff = ci && co ? (new Date(co) - new Date(ci)) / 86400000 : 0;
   const badge = document.getElementById('nightsBadge');
   badge.style.display = diff > 0 ? 'flex' : 'none';
   if (diff > 0) {
     document.getElementById('nightsNum').textContent = diff;
-    document.getElementById('checkOut').min = new Date(new Date(ci).getTime() + 86400000).toISOString().split('T')[0];
+    document.getElementById('checkOut').min =
+      new Date(new Date(ci).getTime() + 86400000).toISOString().split('T')[0];
     document.getElementById('err2').classList.remove('show');
   }
 }
 
-function goNext() {
+// ─────────────────────────────────────────────
+// ไปหน้าถัดไป
+// ─────────────────────────────────────────────
+async function goNext() {
   if (currentStep === 1) {
     if (!selectedRoom) { document.getElementById('err1').classList.add('show'); return; }
-    setStep(2); document.getElementById('btnNext').textContent = 'ดูสรุป →';
+    setStep(2);
+    document.getElementById('btnNext').textContent = 'ดูสรุป →';
 
   } else if (currentStep === 2) {
-    const ci = document.getElementById('checkIn').value;
-    const co = document.getElementById('checkOut').value;
+    const ci   = document.getElementById('checkIn').value;
+    const co   = document.getElementById('checkOut').value;
     const diff = (new Date(co) - new Date(ci)) / 86400000;
     if (!ci || !co || diff <= 0) { document.getElementById('err2').classList.add('show'); return; }
 
-    const ciTime = document.getElementById('checkInTime').value || '14:00';
-    const coTime = document.getElementById('checkOutTime').value || '12:00';
+    // ✅ โหลดสถานะห้องใหม่ตามช่วงวันที่เลือก ก่อนไป step 3
+    showLoading(true, 'ตรวจสอบห้องว่าง...');
+    await loadRooms(ci, co);
+    showLoading(false);
 
-    document.getElementById('sumRoom').textContent    = `ห้อง ${selectedRoom}`;
+    // เช็คว่าห้องที่เลือกยังว่างอยู่ไหม
+    const cards = document.querySelectorAll('.room-card');
+    let stillAvailable = true;
+    cards.forEach(card => {
+      if (card.classList.contains('selected') && card.classList.contains('unavailable')) {
+        stillAvailable = false;
+      }
+    });
+    if (!stillAvailable) {
+      document.getElementById('err2').classList.remove('show');
+      alert(`❌ ห้อง ${selectedRoom} ไม่ว่างในช่วงวันที่เลือก กรุณาเลือกห้องหรือวันที่ใหม่`);
+      setStep(1);
+      document.getElementById('btnNext').textContent = 'เลือกห้อง →';
+      return;
+    }
+
+    const ciTime = document.getElementById('checkInTime').value  || '14:00';
+    const coTime = document.getElementById('checkOutTime').value || '12:00';
+    document.getElementById('sumRoom').textContent     = `ห้อง ${selectedRoom}`;
     document.getElementById('sumCheckIn').textContent  = `${ci} เวลา ${ciTime} น.`;
     document.getElementById('sumCheckOut').textContent = `${co} เวลา ${coTime} น.`;
     document.getElementById('sumNights').textContent   = `${diff} คืน`;
-    setStep(3); document.getElementById('btnNext').textContent = '✅ ยืนยันการจอง';
+    setStep(3);
+    document.getElementById('btnNext').textContent = '✅ ยืนยันการจอง';
 
   } else if (currentStep === 3) {
     confirmBooking();
@@ -261,61 +322,86 @@ function goNext() {
 function goBack() {
   if (currentStep > 1) {
     setStep(currentStep - 1);
-    const labels = ['','เลือกห้อง →','ดูสรุป →','✅ ยืนยันการจอง'];
+    const labels = ['', 'เลือกห้อง →', 'ดูสรุป →', '✅ ยืนยันการจอง'];
     document.getElementById('btnNext').textContent = labels[currentStep];
   }
 }
 
 function setStep(n) {
   currentStep = n;
-  document.querySelectorAll('.section').forEach((s,i) => s.classList.toggle('active', i+1===n));
-  document.querySelectorAll('.step').forEach((s,i) => {
-    s.classList.remove('active','done');
-    if (i+1===n) s.classList.add('active');
-    if (i+1<n)  s.classList.add('done');
+  document.querySelectorAll('.section').forEach((s, i) => s.classList.toggle('active', i + 1 === n));
+  document.querySelectorAll('.step').forEach((s, i) => {
+    s.classList.remove('active', 'done');
+    if (i + 1 === n) s.classList.add('active');
+    if (i + 1 < n)  s.classList.add('done');
   });
   document.getElementById('btnBack').style.display = n > 1 ? 'block' : 'none';
 }
 
-// ── แก้ CORS: ส่งผ่าน liff.sendMessages ให้ Bot รับต่อ ──
+// ─────────────────────────────────────────────
+// ยืนยันการจอง — ส่งผ่าน liff.sendMessages
+// ─────────────────────────────────────────────
 async function confirmBooking() {
   const ci     = document.getElementById('checkIn').value;
   const co     = document.getElementById('checkOut').value;
   const ciTime = document.getElementById('checkInTime').value  || '14:00';
   const coTime = document.getElementById('checkOutTime').value || '12:00';
 
-  showLoading(true);
+  showLoading(true, 'กำลังส่งข้อมูลการจอง...');
   try {
     if (liff.isInClient()) {
-      // ส่งข้อความไปให้ Bot ประมวลผลต่อ — ไม่มี CORS เลย
       await liff.sendMessages([{
         type: 'text',
         text: `จอง : ${selectedRoom} | ${ci} | ${co} | ${ciTime} | ${coTime}`
       }]);
+
+      // ✅ รอให้ Bot มีเวลาสร้าง event ใน Calendar
+      setLoadingText('กำลังบันทึกการจอง...');
+      await new Promise(r => setTimeout(r, 3000));
+
+      // ✅ Refresh สถานะห้องใหม่ (ตอนนี้ควรแสดงว่าเต็มแล้ว)
+      setLoadingText('อัปเดตสถานะห้อง...');
+      await loadRooms(ci, co);
+
       showLoading(false);
       showSuccess();
     } else {
-      // กรณีทดสอบใน browser
-      alert('ทดสอบได้เฉพาะใน LINE เท่านั้นครับ');
+      // ทดสอบนอก LINE
       showLoading(false);
+      alert('⚠️ ทดสอบได้เฉพาะใน LINE เท่านั้น\n\nข้อมูลที่จะส่ง:\nจอง : ' + selectedRoom + ' | ' + ci + ' | ' + co + ' | ' + ciTime + ' | ' + coTime);
     }
   } catch (e) {
     showLoading(false);
-    alert('❌ เกิดข้อผิดพลาด: ' + e.message);
+    if (e.code === 'FORBIDDEN') {
+      alert('❌ ไม่มีสิทธิ์ส่งข้อความ\nกรุณาเปิด scope chat_message.write\nใน LINE Developers Console');
+    } else {
+      alert('❌ เกิดข้อผิดพลาด: ' + (e.message || e.code || e));
+    }
   }
 }
 
+// ─────────────────────────────────────────────
+// UI helpers
+// ─────────────────────────────────────────────
 function showSuccess() {
   document.querySelector('.section.active')?.classList.remove('active');
   document.getElementById('successScreen').classList.add('show');
   document.getElementById('btnRow').style.display = 'none';
-  setTimeout(() => { if (liff.isInClient()) liff.closeWindow(); }, 2500);
+  setTimeout(() => { if (liff.isInClient()) liff.closeWindow(); }, 3000);
 }
 
-function showLoading(show) {
+function showLoading(show, text) {
   document.getElementById('loading').classList.toggle('show', show);
+  if (text) setLoadingText(text);
 }
 
+function setLoadingText(text) {
+  document.getElementById('loadingText').textContent = text;
+}
+
+// ─────────────────────────────────────────────
+// Start
+// ─────────────────────────────────────────────
 initLiff();
 </script>
 </body>
