@@ -9,192 +9,76 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface2: #22263a;
-    --accent: #4f8ef7;
-    --accent2: #7c5cfc;
-    --green: #22c55e;
-    --red: #ef4444;
-    --text: #f0f2ff;
-    --muted: #8890b0;
-    --border: rgba(255,255,255,0.08);
-    --radius: 16px;
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a;
+    --accent: #4f8ef7; --accent2: #7c5cfc; --green: #22c55e; --red: #ef4444;
+    --text: #f0f2ff; --muted: #8890b0; --border: rgba(255,255,255,0.08); --radius: 16px;
   }
-  body {
-    font-family: 'Sarabun', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding-bottom: 120px;
-  }
-  .header {
-    background: linear-gradient(135deg, #1a1d27 0%, #22263a 100%);
-    padding: 24px 20px 20px;
-    border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 10;
-  }
+  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 120px; }
+  .header { background: linear-gradient(135deg, #1a1d27 0%, #22263a 100%); padding: 24px 20px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
   .header h1 { font-size: 20px; font-weight: 700; }
   .header p { font-size: 13px; color: var(--muted); margin-top: 2px; }
-
   .steps { display: flex; padding: 16px 20px 0; }
-  .step {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; position: relative;
-  }
-  .step:not(:last-child)::after {
-    content: ''; position: absolute;
-    top: 14px; left: 60%; right: -40%;
-    height: 2px; background: var(--border); transition: background 0.3s;
-  }
+  .step { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
+  .step:not(:last-child)::after { content: ''; position: absolute; top: 14px; left: 60%; right: -40%; height: 2px; background: var(--border); transition: background 0.3s; }
   .step.done:not(:last-child)::after { background: var(--accent); }
-  .step-dot {
-    width: 28px; height: 28px; border-radius: 50%;
-    background: var(--surface2); border: 2px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700; transition: all 0.3s; color: var(--muted);
-  }
+  .step-dot { width: 28px; height: 28px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; transition: all 0.3s; color: var(--muted); }
   .step.active .step-dot { background: var(--accent); border-color: var(--accent); color: white; }
   .step.done .step-dot { background: var(--green); border-color: var(--green); color: white; }
   .step-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
   .step.active .step-label { color: var(--accent); }
   .step.done .step-label { color: var(--green); }
-
   .section { padding: 20px; display: none; }
   .section.active { display: block; }
-  .section-title {
-    font-size: 11px; font-weight: 600; margin-bottom: 14px;
-    color: var(--muted); text-transform: uppercase; letter-spacing: 1px;
-  }
-
+  .section-title { font-size: 11px; font-weight: 600; margin-bottom: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
   .rooms { display: flex; flex-direction: column; gap: 12px; }
-  .room-card {
-    background: var(--surface); border: 2px solid var(--border);
-    border-radius: var(--radius); padding: 18px; cursor: pointer;
-    transition: all 0.2s; display: flex; align-items: center; gap: 16px;
-    position: relative; overflow: hidden;
-  }
+  .room-card { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); padding: 18px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 16px; position: relative; overflow: hidden; }
   .room-card:active { transform: scale(0.98); }
   .room-card.selected { border-color: var(--accent); background: rgba(79,142,247,0.08); }
   .room-card.unavailable { opacity: 0.5; cursor: not-allowed; }
-  .room-icon {
-    width: 52px; height: 52px; border-radius: 12px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; flex-shrink: 0;
-  }
+  .room-icon { width: 52px; height: 52px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
   .room-info { flex: 1; }
   .room-name { font-size: 18px; font-weight: 700; }
   .room-desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
-  .room-status {
-    font-size: 12px; font-weight: 600; padding: 4px 10px;
-    border-radius: 20px; background: rgba(34,197,94,0.15); color: var(--green);
-  }
+  .room-status { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; background: rgba(34,197,94,0.15); color: var(--green); }
   .room-status.busy { background: rgba(239,68,68,0.15); color: var(--red); }
   .room-check { color: var(--accent); font-size: 20px; display: none; }
   .room-card.selected .room-check { display: block; }
-
-  .date-group { margin-bottom: 16px; }
-  .date-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; display: block; }
-  .date-input {
-    width: 100%; background: var(--surface); border: 2px solid var(--border);
-    border-radius: 12px; padding: 14px 16px; color: var(--text);
-    font-size: 16px; font-family: 'Sarabun', sans-serif;
-    outline: none; transition: border-color 0.2s; -webkit-appearance: none;
-  }
-  .date-input:focus { border-color: var(--accent); }
-  .date-input::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.5; cursor: pointer; }
-
-  /* Time Picker */
-  .time-row { display: flex; gap: 10px; margin-top: 8px; }
-  .time-btn {
-    flex: 1; padding: 12px 8px; border-radius: 10px;
-    border: 2px solid var(--border); background: var(--surface);
-    color: var(--muted); font-size: 14px; font-family: 'Sarabun', sans-serif;
-    cursor: pointer; transition: all 0.2s; text-align: center;
-  }
-  .time-btn.selected { border-color: var(--accent); color: var(--accent); background: rgba(79,142,247,0.1); }
-
-  .nights-badge {
-    background: rgba(79,142,247,0.15); border: 1px solid rgba(79,142,247,0.3);
-    border-radius: 10px; padding: 12px 16px;
-    display: flex; align-items: center; gap: 10px; margin-top: 8px;
-  }
+  .input-group { margin-bottom: 20px; }
+  .input-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; display: block; }
+  .input-row { display: flex; gap: 10px; }
+  .date-input, .time-input { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 14px 16px; color: var(--text); font-size: 15px; font-family: 'Sarabun', sans-serif; outline: none; transition: border-color 0.2s; -webkit-appearance: none; width: 100%; }
+  .date-input { flex: 1.5; }
+  .time-input { flex: 1; }
+  .date-input:focus, .time-input:focus { border-color: var(--accent); }
+  .date-input::-webkit-calendar-picker-indicator, .time-input::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.5; cursor: pointer; }
+  .nights-badge { background: rgba(79,142,247,0.15); border: 1px solid rgba(79,142,247,0.3); border-radius: 10px; padding: 12px 16px; display: none; align-items: center; gap: 10px; margin-top: 4px; }
   .nights-num { font-size: 22px; font-weight: 700; color: var(--accent); }
-
-  .summary-card {
-    background: var(--surface); border-radius: var(--radius);
-    overflow: hidden; border: 1px solid var(--border);
-  }
-  .summary-header {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    padding: 20px; text-align: center;
-  }
+  .summary-card { background: var(--surface); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+  .summary-header { background: linear-gradient(135deg, var(--accent), var(--accent2)); padding: 20px; text-align: center; }
   .summary-header .room-big { font-size: 40px; font-weight: 800; }
   .summary-header p { font-size: 13px; opacity: 0.85; margin-top: 4px; }
   .summary-rows { padding: 16px; }
-  .summary-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 0; border-bottom: 1px solid var(--border);
-  }
+  .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
   .summary-row:last-child { border-bottom: none; }
   .summary-row .label { color: var(--muted); font-size: 14px; }
   .summary-row .value { font-weight: 600; font-size: 14px; text-align: right; }
-  .status-pill {
-    background: rgba(251,191,36,0.15); color: #fbbf24;
-    padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
-  }
-
-  .btn-row {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    padding: 16px 20px;
-    background: linear-gradient(to top, var(--bg) 70%, transparent);
-    display: flex; gap: 10px;
-  }
-  .btn {
-    flex: 1; padding: 16px; border-radius: 14px; border: none;
-    font-size: 16px; font-weight: 700; font-family: 'Sarabun', sans-serif;
-    cursor: pointer; transition: all 0.2s;
-  }
+  .status-pill { background: rgba(251,191,36,0.15); color: #fbbf24; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .btn-row { position: fixed; bottom: 0; left: 0; right: 0; padding: 16px 20px; background: linear-gradient(to top, var(--bg) 70%, transparent); display: flex; gap: 10px; }
+  .btn { flex: 1; padding: 16px; border-radius: 14px; border: none; font-size: 16px; font-weight: 700; font-family: 'Sarabun', sans-serif; cursor: pointer; transition: all 0.2s; }
   .btn:active { transform: scale(0.97); }
   .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; }
   .btn-secondary { background: var(--surface2); color: var(--text); flex: 0 0 80px; }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-  .success-screen {
-    display: none; flex-direction: column; align-items: center;
-    justify-content: center; min-height: 60vh; padding: 40px 20px; text-align: center;
-  }
+  .success-screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; padding: 40px 20px; text-align: center; }
   .success-screen.show { display: flex; }
-  .success-icon {
-    width: 80px; height: 80px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--green), #16a34a);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 36px; margin-bottom: 20px;
-    animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
+  .success-icon { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--green), #16a34a); display: flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 20px; animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
   @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   .success-screen h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
   .success-screen p { color: var(--muted); font-size: 15px; line-height: 1.6; }
-
-  .loading-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(15,17,23,0.8); z-index: 100;
-    align-items: center; justify-content: center; flex-direction: column; gap: 16px;
-  }
+  .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(15,17,23,0.85); z-index: 100; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
   .loading-overlay.show { display: flex; }
-  .spinner {
-    width: 40px; height: 40px; border: 3px solid var(--border);
-    border-top-color: var(--accent); border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
+  .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  .error-msg {
-    background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
-    border-radius: 10px; padding: 12px 16px; color: #f87171;
-    font-size: 13px; margin-top: 12px; display: none;
-  }
+  .error-msg { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 10px; padding: 12px 16px; color: #f87171; font-size: 13px; margin-top: 12px; display: none; }
   .error-msg.show { display: block; }
 </style>
 </head>
@@ -206,67 +90,40 @@
 </div>
 
 <div class="steps">
-  <div class="step active" id="step1">
-    <div class="step-dot">1</div>
-    <div class="step-label">เลือกห้อง</div>
-  </div>
-  <div class="step" id="step2">
-    <div class="step-dot">2</div>
-    <div class="step-label">วันที่</div>
-  </div>
-  <div class="step" id="step3">
-    <div class="step-dot">3</div>
-    <div class="step-label">ยืนยัน</div>
-  </div>
+  <div class="step active" id="step1"><div class="step-dot">1</div><div class="step-label">เลือกห้อง</div></div>
+  <div class="step" id="step2"><div class="step-dot">2</div><div class="step-label">วันที่</div></div>
+  <div class="step" id="step3"><div class="step-dot">3</div><div class="step-label">ยืนยัน</div></div>
 </div>
 
 <!-- Step 1 -->
 <div class="section active" id="sec1">
   <p class="section-title">เลือกห้องพัก</p>
-  <div class="rooms" id="roomList">
-    <div style="text-align:center;padding:40px;color:var(--muted)">กำลังโหลด...</div>
-  </div>
+  <div class="rooms" id="roomList"><div style="text-align:center;padding:40px;color:var(--muted)">กำลังโหลด...</div></div>
   <div class="error-msg" id="err1">กรุณาเลือกห้องก่อน</div>
 </div>
 
 <!-- Step 2 -->
 <div class="section" id="sec2">
   <p class="section-title">เลือกวันที่และเวลา</p>
-
-  <div class="date-group">
-    <label class="date-label">📅 วันเข้าพัก (Check-in)</label>
-    <input type="date" class="date-input" id="checkIn" onchange="calcNights()">
-    <div style="margin-top:8px">
-      <label class="date-label">⏰ เวลาเช็คอิน</label>
-      <div class="time-row" id="checkInTimes">
-        <button class="time-btn selected" onclick="selectTime('in','12:00',this)">12:00</button>
-        <button class="time-btn selected" onclick="selectTime('in','14:00',this)">14:00</button>
-        <button class="time-btn" onclick="selectTime('in','16:00',this)">16:00</button>
-        <button class="time-btn" onclick="selectTime('in','18:00',this)">18:00</button>
-      </div>
+  <div class="input-group">
+    <label class="input-label">📅 วันและเวลาเข้าพัก</label>
+    <div class="input-row">
+      <input type="date" class="date-input" id="checkIn" onchange="calcNights()">
+      <input type="time" class="time-input" id="checkInTime" value="14:00">
     </div>
   </div>
-
-  <div class="date-group">
-    <label class="date-label">🏁 วันออก (Check-out)</label>
-    <input type="date" class="date-input" id="checkOut" onchange="calcNights()">
-    <div style="margin-top:8px">
-      <label class="date-label">⏰ เวลาเช็คเอาท์</label>
-      <div class="time-row" id="checkOutTimes">
-        <button class="time-btn" onclick="selectTime('out','08:00',this)">08:00</button>
-        <button class="time-btn" onclick="selectTime('out','10:00',this)">10:00</button>
-        <button class="time-btn selected" onclick="selectTime('out','12:00',this)">12:00</button>
-        <button class="time-btn" onclick="selectTime('out','14:00',this)">14:00</button>
-      </div>
+  <div class="input-group">
+    <label class="input-label">🏁 วันและเวลาออก</label>
+    <div class="input-row">
+      <input type="date" class="date-input" id="checkOut" onchange="calcNights()">
+      <input type="time" class="time-input" id="checkOutTime" value="12:00">
     </div>
   </div>
-
-  <div class="nights-badge" id="nightsBadge" style="display:none">
+  <div class="nights-badge" id="nightsBadge">
     <span>🌙</span>
     <div>
       <div style="font-size:12px;color:var(--muted)">จำนวนคืน</div>
-      <span class="nights-num" id="nightsNum">0</span>
-      <span style="font-size:14px"> คืน</span>
+      <span class="nights-num" id="nightsNum">0</span><span style="font-size:14px"> คืน</span>
     </div>
   </div>
   <div class="error-msg" id="err2">กรุณาเลือกวันที่ให้ถูกต้อง</div>
@@ -281,22 +138,10 @@
       <p>ห้องพัก</p>
     </div>
     <div class="summary-rows">
-      <div class="summary-row">
-        <span class="label">📅 เข้าพัก</span>
-        <span class="value" id="sumCheckIn">-</span>
-      </div>
-      <div class="summary-row">
-        <span class="label">🏁 ออก</span>
-        <span class="value" id="sumCheckOut">-</span>
-      </div>
-      <div class="summary-row">
-        <span class="label">🌙 จำนวน</span>
-        <span class="value" id="sumNights">-</span>
-      </div>
-      <div class="summary-row">
-        <span class="label">📋 สถานะ</span>
-        <span class="status-pill">รอชำระเงิน</span>
-      </div>
+      <div class="summary-row"><span class="label">📅 เข้าพัก</span><span class="value" id="sumCheckIn">-</span></div>
+      <div class="summary-row"><span class="label">🏁 ออก</span><span class="value" id="sumCheckOut">-</span></div>
+      <div class="summary-row"><span class="label">🌙 จำนวน</span><span class="value" id="sumNights">-</span></div>
+      <div class="summary-row"><span class="label">📋 สถานะ</span><span class="status-pill">รอชำระเงิน</span></div>
     </div>
   </div>
   <div style="margin-top:14px;padding:14px;background:rgba(251,191,36,0.08);border-radius:12px;border:1px solid rgba(251,191,36,0.2)">
@@ -323,41 +168,25 @@
 
 <script>
 const LIFF_ID = '2009583138-fYwhfeRc';
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbyJZpI3TcVNy7BS-89hKFnJ2bVkj5xMyb-80VhxADETaCiR4CaBxCX-34_jWmzpIFSt/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxGgkzLEAGuutxnQ3CklB6TgvXtaOlfVSPKaCMZOXw7BUPKWexhqbQP0q3K2yCEDmTB/exec';
 
-let currentStep = 1;
-let selectedRoom = null;
-let userId = null;
-let userName = null;
-let checkInTime = '14:00';
-let checkOutTime = '12:00';
+let currentStep = 1, selectedRoom = null, userId = null, userName = null;
 
-// ── Init ──────────────────────────────
 async function initLiff() {
   try {
     await liff.init({ liffId: LIFF_ID });
     if (!liff.isLoggedIn()) { liff.login(); return; }
-
     const profile = await liff.getProfile();
     userId = profile.userId;
     userName = profile.displayName;
-
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('checkIn').min = today;
     document.getElementById('checkOut').min = today;
-
-    // ตั้ง default เวลา
-    document.querySelector('#checkInTimes .time-btn:nth-child(2)').classList.add('selected');
-
     await loadRooms();
-  } catch (e) {
-    console.error(e);
-  }
+  } catch (e) { console.error('LIFF init:', e); }
 }
 
-// ── โหลดห้อง ──────────────────────────
 async function loadRooms() {
-  // แสดง fallback ก่อน
   renderRooms([
     { id: 'A', available: true,  desc: 'ห้องมาตรฐาน · 1 เตียง' },
     { id: 'B', available: true,  desc: 'ห้องดีลักซ์ · 1 เตียงใหญ่' },
@@ -367,23 +196,21 @@ async function loadRooms() {
     const res = await fetch(`${GAS_URL}?action=getRooms`);
     const data = await res.json();
     if (data.rooms) renderRooms(data.rooms);
-  } catch (e) { /* ใช้ fallback */ }
+  } catch (e) {}
 }
 
 function renderRooms(rooms) {
   const icons = { A: '🛏️', B: '🛎️', C: '✨' };
   document.getElementById('roomList').innerHTML = rooms.map(r => `
-    <div class="room-card ${r.available ? '' : 'unavailable'}"
-         onclick="${r.available ? `selectRoom('${r.id}', this)` : ''}">
-      <div class="room-icon">${icons[r.id] || '🏠'}</div>
+    <div class="room-card ${r.available ? '' : 'unavailable'}" onclick="${r.available ? `selectRoom('${r.id}',this)` : ''}">
+      <div class="room-icon">${icons[r.id]||'🏠'}</div>
       <div class="room-info">
         <div class="room-name">ห้อง ${r.id}</div>
         <div class="room-desc">${r.desc}</div>
       </div>
-      <span class="room-status ${r.available ? '' : 'busy'}">${r.available ? 'ว่าง' : 'เต็ม'}</span>
+      <span class="room-status ${r.available?'':'busy'}">${r.available?'ว่าง':'เต็ม'}</span>
       <span class="room-check">✓</span>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function selectRoom(room, el) {
@@ -393,56 +220,38 @@ function selectRoom(room, el) {
   document.getElementById('err1').classList.remove('show');
 }
 
-// ── เลือกเวลา ─────────────────────────
-function selectTime(type, time, el) {
-  const container = type === 'in' ? 'checkInTimes' : 'checkOutTimes';
-  document.querySelectorAll(`#${container} .time-btn`).forEach(b => b.classList.remove('selected'));
-  el.classList.add('selected');
-  if (type === 'in') checkInTime = time;
-  else checkOutTime = time;
-}
-
-// ── คำนวณคืน ──────────────────────────
 function calcNights() {
   const ci = document.getElementById('checkIn').value;
   const co = document.getElementById('checkOut').value;
-  if (!ci || !co) return;
-
-  const diff = (new Date(co) - new Date(ci)) / (1000 * 60 * 60 * 24);
+  const diff = ci && co ? (new Date(co) - new Date(ci)) / 86400000 : 0;
   const badge = document.getElementById('nightsBadge');
-
+  badge.style.display = diff > 0 ? 'flex' : 'none';
   if (diff > 0) {
     document.getElementById('nightsNum').textContent = diff;
-    badge.style.display = 'flex';
-    document.getElementById('checkOut').min =
-      new Date(new Date(ci).getTime() + 86400000).toISOString().split('T')[0];
+    document.getElementById('checkOut').min = new Date(new Date(ci).getTime() + 86400000).toISOString().split('T')[0];
     document.getElementById('err2').classList.remove('show');
-  } else {
-    badge.style.display = 'none';
-    if (co) document.getElementById('err2').classList.add('show');
   }
 }
 
-// ── Navigation ─────────────────────────
 function goNext() {
   if (currentStep === 1) {
     if (!selectedRoom) { document.getElementById('err1').classList.add('show'); return; }
-    setStep(2);
-    document.getElementById('btnNext').textContent = 'ดูสรุป →';
+    setStep(2); document.getElementById('btnNext').textContent = 'ดูสรุป →';
 
   } else if (currentStep === 2) {
     const ci = document.getElementById('checkIn').value;
     const co = document.getElementById('checkOut').value;
-    const diff = (new Date(co) - new Date(ci)) / (1000 * 60 * 60 * 24);
+    const diff = (new Date(co) - new Date(ci)) / 86400000;
     if (!ci || !co || diff <= 0) { document.getElementById('err2').classList.add('show'); return; }
 
-    document.getElementById('sumRoom').textContent = `ห้อง ${selectedRoom}`;
-    document.getElementById('sumCheckIn').textContent = `${ci} เวลา ${checkInTime}`;
-    document.getElementById('sumCheckOut').textContent = `${co} เวลา ${checkOutTime}`;
-    document.getElementById('sumNights').textContent = `${diff} คืน`;
+    const ciTime = document.getElementById('checkInTime').value || '14:00';
+    const coTime = document.getElementById('checkOutTime').value || '12:00';
 
-    setStep(3);
-    document.getElementById('btnNext').textContent = '✅ ยืนยันการจอง';
+    document.getElementById('sumRoom').textContent    = `ห้อง ${selectedRoom}`;
+    document.getElementById('sumCheckIn').textContent  = `${ci} เวลา ${ciTime} น.`;
+    document.getElementById('sumCheckOut').textContent = `${co} เวลา ${coTime} น.`;
+    document.getElementById('sumNights').textContent   = `${diff} คืน`;
+    setStep(3); document.getElementById('btnNext').textContent = '✅ ยืนยันการจอง';
 
   } else if (currentStep === 3) {
     confirmBooking();
@@ -452,65 +261,55 @@ function goNext() {
 function goBack() {
   if (currentStep > 1) {
     setStep(currentStep - 1);
-    const labels = ['', 'เลือกห้อง →', 'ดูสรุป →', '✅ ยืนยันการจอง'];
+    const labels = ['','เลือกห้อง →','ดูสรุป →','✅ ยืนยันการจอง'];
     document.getElementById('btnNext').textContent = labels[currentStep];
   }
 }
 
 function setStep(n) {
   currentStep = n;
-  document.querySelectorAll('.section').forEach((s, i) => s.classList.toggle('active', i + 1 === n));
-  document.querySelectorAll('.step').forEach((s, i) => {
-    s.classList.remove('active', 'done');
-    if (i + 1 === n) s.classList.add('active');
-    if (i + 1 < n) s.classList.add('done');
+  document.querySelectorAll('.section').forEach((s,i) => s.classList.toggle('active', i+1===n));
+  document.querySelectorAll('.step').forEach((s,i) => {
+    s.classList.remove('active','done');
+    if (i+1===n) s.classList.add('active');
+    if (i+1<n)  s.classList.add('done');
   });
   document.getElementById('btnBack').style.display = n > 1 ? 'block' : 'none';
 }
 
-// ── ยืนยันการจอง (ใช้ GET แทน POST เพื่อหลีกเลี่ยง CORS) ──
+// ── แก้ CORS: ส่งผ่าน liff.sendMessages ให้ Bot รับต่อ ──
 async function confirmBooking() {
-  const ci = document.getElementById('checkIn').value;
-  const co = document.getElementById('checkOut').value;
+  const ci     = document.getElementById('checkIn').value;
+  const co     = document.getElementById('checkOut').value;
+  const ciTime = document.getElementById('checkInTime').value  || '14:00';
+  const coTime = document.getElementById('checkOutTime').value || '12:00';
 
   showLoading(true);
-
   try {
-    // ส่งข้อมูลผ่าน URL params แทน POST body เพื่อแก้ปัญหา CORS
-    const params = new URLSearchParams({
-      action: 'createBooking',
-      userId,
-      userName: encodeURIComponent(userName || ''),
-      room: selectedRoom,
-      checkIn: ci,
-      checkInTime,
-      checkOut: co,
-      checkOutTime,
-    });
-
-    const res = await fetch(`${GAS_URL}?${params.toString()}`);
-    const data = await res.json();
-    showLoading(false);
-
-    if (data.success) {
-      if (liff.isInClient()) {
-        await liff.sendMessages([{
-          type: 'text',
-          text: `จอง : ${selectedRoom} | ${ci} ${checkInTime} | ${co} ${checkOutTime}`
-        }]);
-      }
-      document.querySelector('.section.active')?.classList.remove('active');
-      document.getElementById('successScreen').classList.add('show');
-      document.getElementById('btnRow').style.display = 'none';
-      setTimeout(() => { if (liff.isInClient()) liff.closeWindow(); }, 2500);
+    if (liff.isInClient()) {
+      // ส่งข้อความไปให้ Bot ประมวลผลต่อ — ไม่มี CORS เลย
+      await liff.sendMessages([{
+        type: 'text',
+        text: `จอง : ${selectedRoom} | ${ci} | ${co} | ${ciTime} | ${coTime}`
+      }]);
+      showLoading(false);
+      showSuccess();
     } else {
-      alert('❌ ' + (data.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่'));
+      // กรณีทดสอบใน browser
+      alert('ทดสอบได้เฉพาะใน LINE เท่านั้นครับ');
+      showLoading(false);
     }
   } catch (e) {
     showLoading(false);
-    console.error(e);
-    alert('❌ ไม่สามารถเชื่อมต่อได้: ' + e.message);
+    alert('❌ เกิดข้อผิดพลาด: ' + e.message);
   }
+}
+
+function showSuccess() {
+  document.querySelector('.section.active')?.classList.remove('active');
+  document.getElementById('successScreen').classList.add('show');
+  document.getElementById('btnRow').style.display = 'none';
+  setTimeout(() => { if (liff.isInClient()) liff.closeWindow(); }, 2500);
 }
 
 function showLoading(show) {
