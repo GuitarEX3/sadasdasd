@@ -1,131 +1,441 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-<meta charset="UTF-8">
-<title>จองห้องพัก</title>
-
-<style>
-body { font-family: Arial; padding:20px; max-width:400px; margin:auto; }
-input, select, button { width:100%; padding:10px; margin:5px 0; }
-.status { font-weight:bold; }
-</style>
-
-</head>
-
-<body>
-
-<h2>จองห้องพัก</h2>
-
-<select id="room">
-  <option>ห้อง A</option>
-  <option>ห้อง B</option>
-</select>
-
-<input type="datetime-local" id="start">
-<input type="datetime-local" id="end">
-
-<button onclick="checkRoom()">เช็คห้องว่าง</button>
-
-<div id="status" class="status"></div>
-
-<input placeholder="ชื่อ" id="name">
-<input placeholder="เบอร์" id="phone">
-<input placeholder="Email" id="email">
-
-<label>แนบสลิป (บังคับ)</label>
-<input type="file" id="slip" accept="image/*">
-
-<button id="btn" onclick="send()">จอง</button>
-
-<script>
-
-const API = "https://script.google.com/macros/s/AKfycbwlMvvXhhPEwlGLr5v7AgvaCXL8LWHrVHokLDt6oMQjLFrpaPdoAJLlBpt4t7T1BDX4/exec";
-
-let available = false;
-
-// 🔍 เช็คห้องว่าง
-function checkRoom() {
-
-  if (!start.value || !end.value) {
-    alert("เลือกวันก่อน");
-    return;
-  }
-
-  fetch(`${API}?room=${room.value}&start=${start.value}&end=${end.value}`)
-  .then(r => r.text())
-  .then(res => {
-
-    if (res === "AVAILABLE") {
-      status.innerHTML = "✅ ห้องว่าง";
-      status.style.color = "green";
-      available = true;
-    } else {
-      status.innerHTML = "❌ ห้องเต็ม";
-      status.style.color = "red";
-      available = false;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏨 จองที่พัก</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-  });
-}
+    body {
+      font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
 
-// 📤 ส่งจอง
-function send() {
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
 
-  if (!available) {
-    alert("กรุณาเช็คห้องก่อน");
-    return;
-  }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
 
-  const file = slip.files[0];
-  if (!file) {
-    alert("ต้องแนบสลิป");
-    return;
-  }
+    .header h1 {
+      color: #667eea;
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
 
-  btn.disabled = true;
+    .header p {
+      color: #666;
+      font-size: 14px;
+    }
 
-  const reader = new FileReader();
+    .form-group {
+      margin-bottom: 20px;
+    }
 
-  reader.onload = function() {
-    const base64 = reader.result.split(',')[1];
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 15px;
+    }
 
-    fetch(API, {
-      method: "POST",
-      body: JSON.stringify({
-        room: room.value,
-        start: start.value,
-        end: end.value,
-        name: name.value,
-        phone: phone.value,
-        email: email.value,
-        slipBase64: base64,
-        slipType: file.type
-      })
-    })
-    .then(r => r.text())
-    .then(res => {
+    .required {
+      color: #e74c3c;
+    }
 
-      btn.disabled = false;
+    input[type="text"],
+    input[type="tel"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
 
-      if (res === "SUCCESS") {
-        alert("✅ จองสำเร็จ (รอตรวจสอบ)");
-        location.reload();
-      } 
-      else if (res === "FULL") {
-        alert("❌ ห้องเต็ม (มีคนจองไปแล้ว)");
-      }
-      else {
-        alert("❌ Error");
-      }
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
 
+    .room-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .room-option {
+      position: relative;
+    }
+
+    .room-option input[type="radio"] {
+      display: none;
+    }
+
+    .room-option label {
+      display: block;
+      padding: 15px;
+      background: #f5f5f5;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .room-option input[type="radio"]:checked + label {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+      transform: scale(1.05);
+    }
+
+    .date-info {
+      background: #f0f4ff;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .btn-submit:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .btn-check-rooms {
+      width: 100%;
+      padding: 12px;
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 10px;
+    }
+
+    .btn-check-rooms:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .info-box {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #667eea;
+    }
+
+    .error {
+      background: #ffe6e6;
+      border-left: 4px solid #e74c3c;
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      color: #c0392b;
+      font-size: 14px;
+    }
+
+    .icon {
+      margin-right: 5px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🏨 จองที่พัก</h1>
+      <p>กรอกข้อมูลเพื่อจองห้องพัก</p>
+    </div>
+
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p>กำลังโหลด...</p>
+    </div>
+
+    <div id="content" style="display: none;">
+      <div class="info-box">
+        <strong>📌 ขั้นตอนการจอง:</strong><br>
+        1. เลือกห้องและวันที่<br>
+        2. กรอกข้อมูลส่วนตัว<br>
+        3. ส่งคำขอจอง<br>
+        4. โอนเงินและส่งสลิป<br>
+        5. รอแอดมินยืนยัน
+      </div>
+
+      <button class="btn-check-rooms" onclick="checkRooms()">
+        🔍 ตรวจสอบห้องว่าง
+      </button>
+
+      <form id="bookingForm">
+        <!-- ข้อมูลส่วนตัว -->
+        <div class="form-group">
+          <label>
+            <span class="icon">👤</span>
+            ชื่อ-นามสกุล <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="name" 
+            name="name" 
+            placeholder="เช่น สมชาย ใจดี" 
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label>
+            <span class="icon">📞</span>
+            เบอร์โทรศัพท์ <span class="required">*</span>
+          </label>
+          <input 
+            type="tel" 
+            id="phone" 
+            name="phone" 
+            placeholder="เช่น 0812345678" 
+            pattern="[0-9]{10}"
+            required
+          >
+        </div>
+
+        <!-- เลือกห้อง -->
+        <div class="form-group">
+          <label>
+            <span class="icon">🏨</span>
+            เลือกห้อง <span class="required">*</span>
+          </label>
+          <div class="room-selector">
+            <div class="room-option">
+              <input type="radio" id="roomA" name="room" value="A" required>
+              <label for="roomA">ห้อง A</label>
+            </div>
+            <div class="room-option">
+              <input type="radio" id="roomB" name="room" value="B">
+              <label for="roomB">ห้อง B</label>
+            </div>
+            <div class="room-option">
+              <input type="radio" id="roomC" name="room" value="C">
+              <label for="roomC">ห้อง C</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- วันเข้าพัก -->
+        <div class="form-group">
+          <label>
+            <span class="icon">📅</span>
+            วันเข้าพัก <span class="required">*</span>
+          </label>
+          <input 
+            type="date" 
+            id="checkIn" 
+            name="checkIn" 
+            required
+            onchange="calculateNights()"
+          >
+        </div>
+
+        <!-- วันออก -->
+        <div class="form-group">
+          <label>
+            <span class="icon">📅</span>
+            วันออก <span class="required">*</span>
+          </label>
+          <input 
+            type="date" 
+            id="checkOut" 
+            name="checkOut" 
+            required
+            onchange="calculateNights()"
+          >
+          <div id="nightsInfo" class="date-info" style="display: none;"></div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          ✅ ส่งคำขอจอง
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ตั้งค่าวันที่ขั้นต่ำเป็นวันนี้
+    const today = new Date().toISOString().split('T')[0];
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('checkIn').setAttribute('min', today);
+      document.getElementById('checkOut').setAttribute('min', today);
     });
 
-  };
+    // เริ่มต้น LIFF
+    window.onload = function() {
+      liff.init({
+        liffId: '2009597872-3RfPCP2A' // ⚠️ เปลี่ยนเป็น LIFF ID ของคุณ
+      }).then(() => {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+        
+        // ตรวจสอบว่าอยู่ใน LINE หรือไม่
+        if (!liff.isLoggedIn()) {
+          liff.login();
+        }
+      }).catch((err) => {
+        console.error('LIFF Initialization failed', err);
+        document.getElementById('loading').innerHTML = 
+          '<div class="error">❌ ไม่สามารถเชื่อมต่อได้<br>กรุณาเปิดผ่าน LINE</div>';
+      });
+    };
 
-  reader.readAsDataURL(file);
-}
+    // คำนวณจำนวนคืน
+    function calculateNights() {
+      const checkIn = document.getElementById('checkIn').value;
+      const checkOut = document.getElementById('checkOut').value;
+      const nightsInfo = document.getElementById('nightsInfo');
 
-</script>
+      if (checkIn && checkOut) {
+        const start = new Date(checkIn);
+        const end = new Date(checkOut);
+        const nights = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
 
+        if (nights > 0) {
+          nightsInfo.style.display = 'block';
+          nightsInfo.innerHTML = `🌙 จำนวน <strong>${nights}</strong> คืน`;
+        } else {
+          nightsInfo.style.display = 'block';
+          nightsInfo.innerHTML = '⚠️ วันออกต้องมากกว่าวันเข้าพัก';
+          nightsInfo.style.background = '#ffe6e6';
+          nightsInfo.style.color = '#c0392b';
+        }
+      }
+    }
+
+    // ตรวจสอบห้องว่าง
+    function checkRooms() {
+      liff.sendMessages([{
+        type: 'text',
+        text: 'ตรวจสอบห้องว่าง'
+      }]).then(() => {
+        alert('✅ ส่งคำสั่งตรวจสอบห้องว่างแล้ว\nกรุณาตรวจสอบแชท');
+      }).catch((err) => {
+        console.error('Error sending message', err);
+      });
+    }
+
+    // ส่งข้อมูลการจอง
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const room = document.querySelector('input[name="room"]:checked')?.value;
+      const checkIn = document.getElementById('checkIn').value;
+      const checkOut = document.getElementById('checkOut').value;
+
+      // ตรวจสอบข้อมูล
+      if (!name || !phone || !room || !checkIn || !checkOut) {
+        alert('❌ กรุณากรอกข้อมูลให้ครบถ้วน');
+        return;
+      }
+
+      // ตรวจสอบวันที่
+      const start = new Date(checkIn);
+      const end = new Date(checkOut);
+      if (start >= end) {
+        alert('❌ วันออกต้องมากกว่าวันเข้าพัก');
+        return;
+      }
+
+      // สร้างข้อความแบบสมัครสมาชิก + จอง
+      const registerMsg = `สมัคร : ${name} | ${phone}`;
+      const bookingMsg = `จอง : ${room} | ${checkIn} | ${checkOut}`;
+
+      // ส่งทั้ง 2 ข้อความ
+      liff.sendMessages([
+        { type: 'text', text: registerMsg },
+        { type: 'text', text: bookingMsg }
+      ]).then(() => {
+        alert('✅ ส่งคำขอจองเรียบร้อย!\n\nกรุณาตรวจสอบแชทและโอนเงิน จากนั้นส่งสลิปมาที่แชท');
+        
+        // ปิด LIFF
+        liff.closeWindow();
+      }).catch((err) => {
+        console.error('Error sending message', err);
+        alert('❌ ไม่สามารถส่งข้อความได้ กรุณาลองใหม่');
+      });
+    });
+  </script>
 </body>
 </html>
