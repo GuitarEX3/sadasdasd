@@ -108,9 +108,7 @@
       flex-shrink: 0;
       box-shadow: 0 4px 12px rgba(232,164,74,0.35);
     }
-    .room-badge-info {
-      flex: 1;
-    }
+    .room-badge-info { flex: 1; }
     .room-badge-label {
       font-size: 11px;
       color: var(--text-muted);
@@ -145,49 +143,6 @@
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.4; transform: scale(0.7); }
-    }
-
-    /* ── Timer ── */
-    .timer-wrap {
-      margin: 16px 20px 0;
-    }
-    .timer-bar {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .timer-icon { font-size: 20px; }
-    .timer-text {
-      flex: 1;
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 400;
-    }
-    .timer-count {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--danger);
-      font-variant-numeric: tabular-nums;
-      min-width: 52px;
-      text-align: right;
-    }
-    .timer-track {
-      height: 4px;
-      background: #e8edf2;
-      border-radius: 2px;
-      margin-top: 8px;
-      overflow: hidden;
-    }
-    .timer-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--success), var(--accent), var(--danger));
-      border-radius: 2px;
-      transition: width 1s linear;
-      width: 100%;
     }
 
     /* ── Card ── */
@@ -274,14 +229,8 @@
       background: #FAFCFE;
       position: relative;
     }
-    .slip-upload-area:hover {
-      border-color: var(--primary);
-      background: #EBF4FF;
-    }
-    .slip-upload-area.has-file {
-      border-color: var(--success);
-      background: #F0FAF5;
-    }
+    .slip-upload-area:hover { border-color: var(--primary); background: #EBF4FF; }
+    .slip-upload-area.has-file { border-color: var(--success); background: #F0FAF5; }
     .slip-upload-area input[type="file"] {
       position: absolute;
       inset: 0;
@@ -294,12 +243,7 @@
     .upload-text { font-size: 14px; color: var(--text-muted); font-weight: 500; }
     .upload-hint { font-size: 12px; color: #aab; margin-top: 4px; }
 
-    .slip-preview {
-      margin-top: 12px;
-      border-radius: 10px;
-      overflow: hidden;
-      display: none;
-    }
+    .slip-preview { margin-top: 12px; border-radius: 10px; overflow: hidden; display: none; }
     .slip-preview img {
       width: 100%;
       max-height: 220px;
@@ -339,11 +283,7 @@
       letter-spacing: 0.3px;
     }
     .btn-submit:active { transform: translateY(1px); box-shadow: 0 2px 8px rgba(44,95,138,0.25); }
-    .btn-submit:disabled {
-      background: #c5cdd6;
-      box-shadow: none;
-      cursor: not-allowed;
-    }
+    .btn-submit:disabled { background: #c5cdd6; box-shadow: none; cursor: not-allowed; }
 
     /* ── Loading / Error ── */
     .loading-screen {
@@ -447,18 +387,6 @@
     </div>
   </div>
 
-  <!-- Timer -->
-  <div class="timer-wrap">
-    <div class="timer-bar">
-      <span class="timer-icon">⏳</span>
-      <span class="timer-text">เวลาที่เหลือในการกรอก</span>
-      <span class="timer-count" id="timerDisplay">30:00</span>
-    </div>
-    <div class="timer-track">
-      <div class="timer-fill" id="timerFill"></div>
-    </div>
-  </div>
-
   <form id="bookingForm">
     <input type="hidden" id="room" value="A">
 
@@ -534,15 +462,11 @@
 
 <script>
   // ⚠️ เปลี่ยนเป็น Web App URL ของ GAS
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycbwh_mTBdI8CA0Tr3_M9t4f8exuB-xoZV3DzBlILhatPHuJcc__w_JeNWl80izxk83HQ/exec';
-  const LIFF_ID  = '2009597872-3RfPCP2A'; // ⚠️ เปลี่ยนเป็น LIFF ID ของคุณ
-  const DEADLINE_MINUTES = 30;
-
-  let startTime = null;
-  let timerInterval = null;
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbzPb4J8NXr3dRdwhdg_SL8NBjKXRFtYXHkl-wjEXCGcmmiCBlXr_8CBBoxOGEulxw1U/exec';
+  const LIFF_ID = '2009597872-3RfPCP2A'; // ⚠️ เปลี่ยนเป็น LIFF ID ของคุณ
 
   // ═══════════════════════
-  // Init
+  // Init LIFF
   // ═══════════════════════
   window.onload = async function () {
     const params = new URLSearchParams(window.location.search);
@@ -554,10 +478,6 @@
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('checkIn').setAttribute('min', today);
     document.getElementById('checkOut').setAttribute('min', today);
-
-    // Start timer (เริ่มนับทันที ไม่รอ LIFF)
-    startTime = Date.now();
-    startTimer();
 
     try {
       await liff.init({ liffId: LIFF_ID });
@@ -575,32 +495,6 @@
   };
 
   // ═══════════════════════
-  // Timer countdown
-  // ═══════════════════════
-  function startTimer() {
-    const totalMs = DEADLINE_MINUTES * 60 * 1000;
-    timerInterval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const remaining = Math.max(0, totalMs - elapsed);
-      const mins = Math.floor(remaining / 60000);
-      const secs = Math.floor((remaining % 60000) / 1000);
-      document.getElementById('timerDisplay').textContent =
-        String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
-
-      const pct = (remaining / totalMs) * 100;
-      document.getElementById('timerFill').style.width = pct + '%';
-
-      if (remaining <= 0) {
-        clearInterval(timerInterval);
-        document.getElementById('timerDisplay').textContent = '00:00';
-        document.getElementById('submitBtn').disabled = true;
-        alert('⏰ หมดเวลาแล้ว\nกรุณาพิมพ์ จองห้อง' + document.getElementById('room').value + ' เพื่อเริ่มใหม่');
-        liff.closeWindow();
-      }
-    }, 1000);
-  }
-
-  // ═══════════════════════
   // คำนวณคืน
   // ═══════════════════════
   function calcNights() {
@@ -610,12 +504,12 @@
     if (!ci || !co) { info.style.display = 'none'; return; }
     const nights = Math.round((new Date(co) - new Date(ci)) / 86400000);
     if (nights > 0) {
-      document.getElementById('nightsText').textContent = `${nights} คืน (เช็คอิน 14:00 น. / เช็คเอาท์ 12:00 น.)`;
+      document.getElementById('nightsText').textContent =
+        `${nights} คืน (เช็คอิน 14:00 น. / เช็คเอาท์ 12:00 น.)`;
       info.style.display = 'flex';
     } else {
       info.style.display = 'none';
     }
-    // อัปเดต min ของ checkout
     document.getElementById('checkOut').setAttribute('min', ci);
   }
 
@@ -640,7 +534,8 @@
   }
 
   // ═══════════════════════
-  // Submit
+  // Submit — แก้ CORS ด้วย Content-Type: text/plain
+  // (หลีกเลี่ยง preflight OPTIONS ที่ GAS ไม่รองรับ)
   // ═══════════════════════
   async function submitBooking() {
     const name     = document.getElementById('name').value.trim();
@@ -652,19 +547,15 @@
 
     // Validate
     if (!name)     { alert('❌ กรุณากรอกชื่อ-นามสกุล'); return; }
-    if (!phone || !/^[0-9]{9,10}$/.test(phone)) { alert('❌ กรุณากรอกเบอร์โทรให้ถูกต้อง (9-10 หลัก)'); return; }
+    if (!phone || !/^[0-9]{9,10}$/.test(phone)) {
+      alert('❌ กรุณากรอกเบอร์โทรให้ถูกต้อง (9-10 หลัก)'); return;
+    }
     if (!checkIn)  { alert('❌ กรุณาเลือกวันเช็คอิน'); return; }
     if (!checkOut) { alert('❌ กรุณาเลือกวันเช็คเอาท์'); return; }
-    if (new Date(checkIn) >= new Date(checkOut)) { alert('❌ วันเช็คเอาท์ต้องหลังวันเช็คอิน'); return; }
-    if (!slipFile) { alert('❌ กรุณาแนบสลิปการโอนเงิน'); return; }
-
-    // Check timer
-    const elapsed = (Date.now() - startTime) / 60000;
-    if (elapsed >= DEADLINE_MINUTES) {
-      alert('⏰ หมดเวลาแล้ว กรุณาจองใหม่');
-      liff.closeWindow();
-      return;
+    if (new Date(checkIn) >= new Date(checkOut)) {
+      alert('❌ วันเช็คเอาท์ต้องหลังวันเช็คอิน'); return;
     }
+    if (!slipFile) { alert('❌ กรุณาแนบสลิปการโอนเงิน'); return; }
 
     // UI loading
     const btn = document.getElementById('submitBtn');
@@ -673,17 +564,16 @@
     document.getElementById('btnText').textContent = 'กำลังส่ง...';
 
     try {
-      // Get userId
       const profile = await liff.getProfile();
       const userId = profile.userId;
-
-      // Convert slip to base64
       const slipBase64 = await toBase64(slipFile);
 
-      // POST to GAS
+      // ใช้ Content-Type: text/plain เพื่อหลีก CORS preflight
+      // GAS Web App รับได้ทั้ง JSON และ text/plain ผ่าน e.postData.contents
       const res = await fetch(GAS_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
         body: JSON.stringify({
           type: 'LIFF_BOOKING',
           userId, name, phone, room, checkIn, checkOut,
@@ -695,7 +585,6 @@
       const result = await res.json();
 
       if (result.success) {
-        clearInterval(timerInterval);
         const nights = Math.round((new Date(checkOut) - new Date(checkIn)) / 86400000);
         document.getElementById('successMsg').innerHTML =
           `🏨 ห้อง ${room} | ${nights} คืน<br>` +
@@ -711,7 +600,7 @@
       }
 
     } catch (err) {
-      console.error(err);
+      console.error('Submit error:', err);
       alert('❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
       btn.disabled = false;
       document.getElementById('btnSpinner').style.display = 'none';
