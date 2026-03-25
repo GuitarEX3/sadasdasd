@@ -3,439 +3,733 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🏨 จองที่พัก</title>
+  <title>จองที่พัก</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --primary: #2C5F8A;
+      --primary-light: #3A7CBD;
+      --primary-dark: #1A3F5C;
+      --accent: #E8A44A;
+      --accent-light: #F5C272;
+      --success: #2D8A5E;
+      --danger: #C0392B;
+      --bg: #F4F7FB;
+      --card: #FFFFFF;
+      --text: #1A2A3A;
+      --text-muted: #6B7C8D;
+      --border: #D8E4EF;
+      --shadow: 0 4px 24px rgba(44,95,138,0.10);
+      --radius: 14px;
     }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Prompt', sans-serif;
+      background: var(--bg);
       min-height: 100vh;
-      padding: 20px;
+      padding: 0 0 40px 0;
+      color: var(--text);
     }
 
-    .container {
-      max-width: 500px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    }
-
+    /* ── Header ── */
     .header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 60%, var(--primary-light) 100%);
+      padding: 32px 24px 48px;
       text-align: center;
-      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
     }
-
+    .header::before {
+      content: '';
+      position: absolute;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+      top: -60px; right: -60px;
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      width: 140px; height: 140px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+      bottom: 10px; left: -40px;
+    }
+    .header-icon {
+      font-size: 40px;
+      margin-bottom: 8px;
+      display: block;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+    }
     .header h1 {
-      color: #667eea;
-      font-size: 28px;
-      margin-bottom: 5px;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      position: relative;
+      z-index: 1;
     }
-
     .header p {
-      color: #666;
-      font-size: 14px;
+      color: rgba(255,255,255,0.75);
+      font-size: 13px;
+      margin-top: 4px;
+      font-weight: 300;
+      position: relative;
+      z-index: 1;
     }
 
-    .form-group {
-      margin-bottom: 20px;
+    /* ── Room Badge ── */
+    .room-badge-wrap {
+      margin: -24px 20px 0;
+      position: relative;
+      z-index: 10;
     }
+    .room-badge {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-left: 5px solid var(--accent);
+    }
+    .room-badge-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(232,164,74,0.35);
+    }
+    .room-badge-info {
+      flex: 1;
+    }
+    .room-badge-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .room-badge-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      line-height: 1.2;
+    }
+    .room-badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #FFF3E0;
+      color: #E65100;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-top: 4px;
+    }
+    .dot-pulse {
+      width: 7px; height: 7px;
+      background: #E65100;
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    /* ── Timer ── */
+    .timer-wrap {
+      margin: 16px 20px 0;
+    }
+    .timer-bar {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .timer-icon { font-size: 20px; }
+    .timer-text {
+      flex: 1;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+    .timer-count {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--danger);
+      font-variant-numeric: tabular-nums;
+      min-width: 52px;
+      text-align: right;
+    }
+    .timer-track {
+      height: 4px;
+      background: #e8edf2;
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .timer-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--success), var(--accent), var(--danger));
+      border-radius: 2px;
+      transition: width 1s linear;
+      width: 100%;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin: 16px 20px 0;
+      padding: 22px 20px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    /* ── Form fields ── */
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
 
     label {
       display: block;
-      margin-bottom: 8px;
-      color: #333;
+      font-size: 13px;
       font-weight: 600;
-      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 7px;
     }
-
-    .required {
-      color: #e74c3c;
-    }
+    .required { color: var(--danger); }
 
     input[type="text"],
     input[type="tel"],
-    input[type="date"],
-    select {
+    input[type="date"] {
       width: 100%;
-      padding: 12px 15px;
-      border: 2px solid #e0e0e0;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
       border-radius: 10px;
-      font-size: 16px;
-      transition: all 0.3s;
-      font-family: inherit;
+      font-size: 15px;
+      font-family: 'Prompt', sans-serif;
+      color: var(--text);
+      background: #FAFCFE;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
     }
-
-    input:focus,
-    select:focus {
+    input:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(44,95,138,0.10);
+      background: #fff;
     }
 
-    .room-selector {
+    .date-row {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 10px;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
 
-    .room-option {
-      position: relative;
-    }
-
-    .room-option input[type="radio"] {
-      display: none;
-    }
-
-    .room-option label {
-      display: block;
-      padding: 15px;
-      background: #f5f5f5;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .room-option input[type="radio"]:checked + label {
-      background: #667eea;
-      color: white;
-      border-color: #667eea;
-      transform: scale(1.05);
-    }
-
-    .date-info {
-      background: #f0f4ff;
-      padding: 12px;
+    .nights-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #EBF4FF;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 12px;
       border-radius: 8px;
       margin-top: 10px;
-      font-size: 14px;
-      color: #555;
     }
 
-    .btn-submit {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
+    /* ── Slip Upload ── */
+    .slip-upload-area {
+      border: 2px dashed var(--border);
       border-radius: 12px;
-      font-size: 18px;
-      font-weight: bold;
+      padding: 24px 16px;
+      text-align: center;
       cursor: pointer;
-      transition: all 0.3s;
-      margin-top: 10px;
+      transition: all 0.2s;
+      background: #FAFCFE;
+      position: relative;
+    }
+    .slip-upload-area:hover {
+      border-color: var(--primary);
+      background: #EBF4FF;
+    }
+    .slip-upload-area.has-file {
+      border-color: var(--success);
+      background: #F0FAF5;
+    }
+    .slip-upload-area input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .upload-icon { font-size: 32px; margin-bottom: 6px; }
+    .upload-text { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+    .upload-hint { font-size: 12px; color: #aab; margin-top: 4px; }
+
+    .slip-preview {
+      margin-top: 12px;
+      border-radius: 10px;
+      overflow: hidden;
+      display: none;
+    }
+    .slip-preview img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: contain;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+    }
+    .slip-preview-label {
+      font-size: 12px;
+      color: var(--success);
+      font-weight: 600;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    .btn-submit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    /* ── Submit Button ── */
+    .btn-submit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: calc(100% - 40px);
+      margin: 20px 20px 0;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 17px;
+      font-weight: 700;
+      font-family: 'Prompt', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(44,95,138,0.35);
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
     }
-
-    .btn-submit:active {
-      transform: translateY(0);
-    }
-
+    .btn-submit:active { transform: translateY(1px); box-shadow: 0 2px 8px rgba(44,95,138,0.25); }
     .btn-submit:disabled {
-      background: #ccc;
+      background: #c5cdd6;
+      box-shadow: none;
       cursor: not-allowed;
     }
 
-    .btn-check-rooms {
-      width: 100%;
-      padding: 12px;
-      background: white;
-      color: #667eea;
-      border: 2px solid #667eea;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s;
-      margin-bottom: 10px;
+    /* ── Loading / Error ── */
+    .loading-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      gap: 16px;
+      padding: 40px;
     }
-
-    .btn-check-rooms:hover {
-      background: #667eea;
-      color: white;
-    }
-
-    .info-box {
-      background: #fff3cd;
-      border-left: 4px solid #ffc107;
-      padding: 12px;
-      margin-bottom: 20px;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #667eea;
-    }
-
-    .error {
-      background: #ffe6e6;
-      border-left: 4px solid #e74c3c;
-      padding: 12px;
-      margin-bottom: 20px;
-      border-radius: 5px;
-      color: #c0392b;
-      font-size: 14px;
-    }
-
-    .icon {
-      margin-right: 5px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
     .spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255,255,255,.3);
+      width: 44px; height: 44px;
+      border: 4px solid rgba(44,95,138,0.15);
+      border-top-color: var(--primary);
       border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s linear infinite;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: var(--text-muted); font-size: 14px; }
+
+    .error-screen {
+      margin: 40px 20px;
+      background: #FDECEA;
+      border-left: 4px solid var(--danger);
+      border-radius: 10px;
+      padding: 18px 16px;
+      color: var(--danger);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* ── Success overlay ── */
+    .success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(26,42,58,0.7);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .success-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .success-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 36px 28px;
+      text-align: center;
+      max-width: 320px;
+      width: 100%;
+      animation: popUp 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes popUp { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .success-icon { font-size: 56px; margin-bottom: 12px; }
+    .success-title { font-size: 20px; font-weight: 700; color: var(--success); margin-bottom: 8px; }
+    .success-msg { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── Inline spinner for button ── */
+    .btn-spinner {
+      width: 18px; height: 18px;
+      border: 3px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      display: none;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>🏨 จองที่พัก</h1>
-      <p>กรอกข้อมูลเพื่อจองห้องพัก</p>
-    </div>
 
-    <div id="loading" class="loading">
-      <div class="spinner"></div>
-      <p>กำลังโหลด...</p>
-    </div>
+<!-- Loading -->
+<div id="loadingScreen" class="loading-screen">
+  <div class="spinner"></div>
+  <span class="loading-text">กำลังโหลด...</span>
+</div>
 
-    <div id="content" style="display: none;">
-      <div class="info-box">
-        <strong>📌 ขั้นตอนการจอง:</strong><br>
-        1. เลือกห้องและวันที่<br>
-        2. กรอกข้อมูลส่วนตัว<br>
-        3. ส่งคำขอจอง<br>
-        4. โอนเงินและส่งสลิป<br>
-        5. รอแอดมินยืนยัน
+<!-- Main content -->
+<div id="mainContent" style="display:none;">
+
+  <!-- Header -->
+  <div class="header">
+    <span class="header-icon">🏨</span>
+    <h1>จองที่พัก</h1>
+    <p>กรอกข้อมูลให้ครบเพื่อยืนยันการจอง</p>
+  </div>
+
+  <!-- Room Badge -->
+  <div class="room-badge-wrap">
+    <div class="room-badge">
+      <div class="room-badge-icon">🛏️</div>
+      <div class="room-badge-info">
+        <div class="room-badge-label">ห้องที่เลือก</div>
+        <div class="room-badge-name" id="roomDisplay">ห้อง A</div>
+        <div class="room-badge-status">
+          <span class="dot-pulse"></span>
+          รอกรอกข้อมูล
+        </div>
       </div>
-
-      <button class="btn-check-rooms" onclick="checkRooms()">
-        🔍 ตรวจสอบห้องว่าง
-      </button>
-
-      <form id="bookingForm">
-        <!-- ข้อมูลส่วนตัว -->
-        <div class="form-group">
-          <label>
-            <span class="icon">👤</span>
-            ชื่อ-นามสกุล <span class="required">*</span>
-          </label>
-          <input 
-            type="text" 
-            id="name" 
-            name="name" 
-            placeholder="เช่น สมชาย ใจดี" 
-            required
-          >
-        </div>
-
-        <div class="form-group">
-          <label>
-            <span class="icon">📞</span>
-            เบอร์โทรศัพท์ <span class="required">*</span>
-          </label>
-          <input 
-            type="tel" 
-            id="phone" 
-            name="phone" 
-            placeholder="เช่น 0812345678" 
-            pattern="[0-9]{10}"
-            required
-          >
-        </div>
-
-        <!-- เลือกห้อง -->
-        <div class="form-group">
-          <label>
-            <span class="icon">🏨</span>
-            เลือกห้อง <span class="required">*</span>
-          </label>
-          <div class="room-selector">
-            <div class="room-option">
-              <input type="radio" id="roomA" name="room" value="A" required>
-              <label for="roomA">ห้อง A</label>
-            </div>
-            <div class="room-option">
-              <input type="radio" id="roomB" name="room" value="B">
-              <label for="roomB">ห้อง B</label>
-            </div>
-            <div class="room-option">
-              <input type="radio" id="roomC" name="room" value="C">
-              <label for="roomC">ห้อง C</label>
-            </div>
-          </div>
-        </div>
-
-        <!-- วันเข้าพัก -->
-        <div class="form-group">
-          <label>
-            <span class="icon">📅</span>
-            วันเข้าพัก <span class="required">*</span>
-          </label>
-          <input 
-            type="date" 
-            id="checkIn" 
-            name="checkIn" 
-            required
-            onchange="calculateNights()"
-          >
-        </div>
-
-        <!-- วันออก -->
-        <div class="form-group">
-          <label>
-            <span class="icon">📅</span>
-            วันออก <span class="required">*</span>
-          </label>
-          <input 
-            type="date" 
-            id="checkOut" 
-            name="checkOut" 
-            required
-            onchange="calculateNights()"
-          >
-          <div id="nightsInfo" class="date-info" style="display: none;"></div>
-        </div>
-
-        <button type="submit" class="btn-submit">
-          ✅ ส่งคำขอจอง
-        </button>
-      </form>
     </div>
   </div>
 
-  <script>
-    // ตั้งค่าวันที่ขั้นต่ำเป็นวันนี้
+  <!-- Timer -->
+  <div class="timer-wrap">
+    <div class="timer-bar">
+      <span class="timer-icon">⏳</span>
+      <span class="timer-text">เวลาที่เหลือในการกรอก</span>
+      <span class="timer-count" id="timerDisplay">30:00</span>
+    </div>
+    <div class="timer-track">
+      <div class="timer-fill" id="timerFill"></div>
+    </div>
+  </div>
+
+  <form id="bookingForm">
+    <input type="hidden" id="room" value="A">
+
+    <!-- ข้อมูลส่วนตัว -->
+    <div class="card">
+      <div class="card-title">👤 ข้อมูลผู้จอง</div>
+      <div class="field">
+        <label>ชื่อ-นามสกุล <span class="required">*</span></label>
+        <input type="text" id="name" placeholder="เช่น สมชาย ใจดี" required autocomplete="off">
+      </div>
+      <div class="field">
+        <label>เบอร์โทรศัพท์ <span class="required">*</span></label>
+        <input type="tel" id="phone" placeholder="เช่น 0812345678" pattern="[0-9]{9,10}" required>
+      </div>
+    </div>
+
+    <!-- วันที่ -->
+    <div class="card">
+      <div class="card-title">📅 วันที่เข้าพัก</div>
+      <div class="date-row">
+        <div class="field">
+          <label>เช็คอิน <span class="required">*</span></label>
+          <input type="date" id="checkIn" required onchange="calcNights()">
+        </div>
+        <div class="field">
+          <label>เช็คเอาท์ <span class="required">*</span></label>
+          <input type="date" id="checkOut" required onchange="calcNights()">
+        </div>
+      </div>
+      <div id="nightsInfo" style="display:none;" class="nights-badge">
+        🌙 <span id="nightsText"></span>
+      </div>
+    </div>
+
+    <!-- สลิป -->
+    <div class="card">
+      <div class="card-title">💳 สลิปโอนเงิน</div>
+      <div class="slip-upload-area" id="uploadArea">
+        <input type="file" id="slipFile" accept="image/*" required onchange="previewSlip(event)">
+        <div class="upload-icon">📎</div>
+        <div class="upload-text">แตะเพื่ออัปโหลดสลิป</div>
+        <div class="upload-hint">รองรับ JPG, PNG (สูงสุด 5MB)</div>
+      </div>
+      <div class="slip-preview" id="slipPreview">
+        <img id="slipImg" src="" alt="สลิป">
+        <div class="slip-preview-label">✅ แนบสลิปเรียบร้อย</div>
+      </div>
+    </div>
+
+  </form>
+
+  <!-- Submit -->
+  <button class="btn-submit" id="submitBtn" onclick="submitBooking()">
+    <span class="btn-spinner" id="btnSpinner"></span>
+    <span id="btnText">✅ ยืนยันการจอง</span>
+  </button>
+
+</div>
+
+<!-- Error -->
+<div id="errorScreen" style="display:none;">
+  <div class="error-screen" id="errorMsg">❌ ไม่สามารถโหลดได้</div>
+</div>
+
+<!-- Success overlay -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">จองสำเร็จ!</div>
+    <div class="success-msg" id="successMsg">ส่งข้อมูลเรียบร้อยแล้ว<br>รอแอดมินยืนยันนะคะ 🙏</div>
+  </div>
+</div>
+
+<script>
+  // ⚠️ เปลี่ยนเป็น Web App URL ของ GAS
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbxf4gSE8qUdcNTz5ROLLGj1c4XLW0vtiBfuQrOufxAqaRZidXCabIOHwtGwRudQ8DH1/exec';
+  const LIFF_ID  = '2009597872-3RfPCP2A'; // ⚠️ เปลี่ยนเป็น LIFF ID ของคุณ
+  const DEADLINE_MINUTES = 30;
+
+  let startTime = null;
+  let timerInterval = null;
+
+  // ═══════════════════════
+  // Init
+  // ═══════════════════════
+  window.onload = async function () {
+    const params = new URLSearchParams(window.location.search);
+    const room = (params.get('room') || 'A').toUpperCase();
+    document.getElementById('room').value = room;
+    document.getElementById('roomDisplay').textContent = `ห้อง ${room}`;
+
+    // เซ็ตวันที่ขั้นต่ำ
     const today = new Date().toISOString().split('T')[0];
-    document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('checkIn').setAttribute('min', today);
-      document.getElementById('checkOut').setAttribute('min', today);
-    });
+    document.getElementById('checkIn').setAttribute('min', today);
+    document.getElementById('checkOut').setAttribute('min', today);
 
-    // เริ่มต้น LIFF
-    window.onload = function() {
-      liff.init({
-        liffId: '2009597872-3RfPCP2A' // ⚠️ เปลี่ยนเป็น LIFF ID ของคุณ
-      }).then(() => {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('content').style.display = 'block';
-        
-        // ตรวจสอบว่าอยู่ใน LINE หรือไม่
-        if (!liff.isLoggedIn()) {
-          liff.login();
-        }
-      }).catch((err) => {
-        console.error('LIFF Initialization failed', err);
-        document.getElementById('loading').innerHTML = 
-          '<div class="error">❌ ไม่สามารถเชื่อมต่อได้<br>กรุณาเปิดผ่าน LINE</div>';
-      });
-    };
+    // Start timer (เริ่มนับทันที ไม่รอ LIFF)
+    startTime = Date.now();
+    startTimer();
 
-    // คำนวณจำนวนคืน
-    function calculateNights() {
-      const checkIn = document.getElementById('checkIn').value;
-      const checkOut = document.getElementById('checkOut').value;
-      const nightsInfo = document.getElementById('nightsInfo');
-
-      if (checkIn && checkOut) {
-        const start = new Date(checkIn);
-        const end = new Date(checkOut);
-        const nights = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-
-        if (nights > 0) {
-          nightsInfo.style.display = 'block';
-          nightsInfo.innerHTML = `🌙 จำนวน <strong>${nights}</strong> คืน`;
-        } else {
-          nightsInfo.style.display = 'block';
-          nightsInfo.innerHTML = '⚠️ วันออกต้องมากกว่าวันเข้าพัก';
-          nightsInfo.style.background = '#ffe6e6';
-          nightsInfo.style.color = '#c0392b';
-        }
-      }
-    }
-
-    // ตรวจสอบห้องว่าง
-    function checkRooms() {
-      liff.sendMessages([{
-        type: 'text',
-        text: 'ตรวจสอบห้องว่าง'
-      }]).then(() => {
-        alert('✅ ส่งคำสั่งตรวจสอบห้องว่างแล้ว\nกรุณาตรวจสอบแชท');
-      }).catch((err) => {
-        console.error('Error sending message', err);
-      });
-    }
-
-    // ส่งข้อมูลการจอง
-    document.getElementById('bookingForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      const name = document.getElementById('name').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const room = document.querySelector('input[name="room"]:checked')?.value;
-      const checkIn = document.getElementById('checkIn').value;
-      const checkOut = document.getElementById('checkOut').value;
-
-      // ตรวจสอบข้อมูล
-      if (!name || !phone || !room || !checkIn || !checkOut) {
-        alert('❌ กรุณากรอกข้อมูลให้ครบถ้วน');
+    try {
+      await liff.init({ liffId: LIFF_ID });
+      if (!liff.isLoggedIn()) {
+        liff.login();
         return;
       }
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+    } catch (err) {
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('errorScreen').style.display = 'block';
+      document.getElementById('errorMsg').textContent = '❌ กรุณาเปิดผ่าน LINE';
+    }
+  };
 
-      // ตรวจสอบวันที่
-      const start = new Date(checkIn);
-      const end = new Date(checkOut);
-      if (start >= end) {
-        alert('❌ วันออกต้องมากกว่าวันเข้าพัก');
-        return;
-      }
+  // ═══════════════════════
+  // Timer countdown
+  // ═══════════════════════
+  function startTimer() {
+    const totalMs = DEADLINE_MINUTES * 60 * 1000;
+    timerInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, totalMs - elapsed);
+      const mins = Math.floor(remaining / 60000);
+      const secs = Math.floor((remaining % 60000) / 1000);
+      document.getElementById('timerDisplay').textContent =
+        String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
 
-      // สร้างข้อความแบบสมัครสมาชิก + จอง
-      const registerMsg = `สมัคร : ${name} | ${phone}`;
-      const bookingMsg = `จอง : ${room} | ${checkIn} | ${checkOut}`;
+      const pct = (remaining / totalMs) * 100;
+      document.getElementById('timerFill').style.width = pct + '%';
 
-      // ส่งทั้ง 2 ข้อความ
-      liff.sendMessages([
-        { type: 'text', text: registerMsg },
-        { type: 'text', text: bookingMsg }
-      ]).then(() => {
-        alert('✅ ส่งคำขอจองเรียบร้อย!\n\nกรุณาตรวจสอบแชทและโอนเงิน จากนั้นส่งสลิปมาที่แชท');
-        
-        // ปิด LIFF
+      if (remaining <= 0) {
+        clearInterval(timerInterval);
+        document.getElementById('timerDisplay').textContent = '00:00';
+        document.getElementById('submitBtn').disabled = true;
+        alert('⏰ หมดเวลาแล้ว\nกรุณาพิมพ์ จองห้อง' + document.getElementById('room').value + ' เพื่อเริ่มใหม่');
         liff.closeWindow();
-      }).catch((err) => {
-        console.error('Error sending message', err);
-        alert('❌ ไม่สามารถส่งข้อความได้ กรุณาลองใหม่');
+      }
+    }, 1000);
+  }
+
+  // ═══════════════════════
+  // คำนวณคืน
+  // ═══════════════════════
+  function calcNights() {
+    const ci = document.getElementById('checkIn').value;
+    const co = document.getElementById('checkOut').value;
+    const info = document.getElementById('nightsInfo');
+    if (!ci || !co) { info.style.display = 'none'; return; }
+    const nights = Math.round((new Date(co) - new Date(ci)) / 86400000);
+    if (nights > 0) {
+      document.getElementById('nightsText').textContent = `${nights} คืน (เช็คอิน 14:00 น. / เช็คเอาท์ 12:00 น.)`;
+      info.style.display = 'flex';
+    } else {
+      info.style.display = 'none';
+    }
+    // อัปเดต min ของ checkout
+    document.getElementById('checkOut').setAttribute('min', ci);
+  }
+
+  // ═══════════════════════
+  // Preview สลิป
+  // ═══════════════════════
+  function previewSlip(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('❌ ไฟล์ใหญ่เกิน 5MB กรุณาเลือกรูปใหม่');
+      e.target.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      document.getElementById('slipImg').src = ev.target.result;
+      document.getElementById('slipPreview').style.display = 'block';
+      document.getElementById('uploadArea').classList.add('has-file');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ═══════════════════════
+  // Submit
+  // ═══════════════════════
+  async function submitBooking() {
+    const name     = document.getElementById('name').value.trim();
+    const phone    = document.getElementById('phone').value.trim();
+    const room     = document.getElementById('room').value;
+    const checkIn  = document.getElementById('checkIn').value;
+    const checkOut = document.getElementById('checkOut').value;
+    const slipFile = document.getElementById('slipFile').files[0];
+
+    // Validate
+    if (!name)     { alert('❌ กรุณากรอกชื่อ-นามสกุล'); return; }
+    if (!phone || !/^[0-9]{9,10}$/.test(phone)) { alert('❌ กรุณากรอกเบอร์โทรให้ถูกต้อง (9-10 หลัก)'); return; }
+    if (!checkIn)  { alert('❌ กรุณาเลือกวันเช็คอิน'); return; }
+    if (!checkOut) { alert('❌ กรุณาเลือกวันเช็คเอาท์'); return; }
+    if (new Date(checkIn) >= new Date(checkOut)) { alert('❌ วันเช็คเอาท์ต้องหลังวันเช็คอิน'); return; }
+    if (!slipFile) { alert('❌ กรุณาแนบสลิปการโอนเงิน'); return; }
+
+    // Check timer
+    const elapsed = (Date.now() - startTime) / 60000;
+    if (elapsed >= DEADLINE_MINUTES) {
+      alert('⏰ หมดเวลาแล้ว กรุณาจองใหม่');
+      liff.closeWindow();
+      return;
+    }
+
+    // UI loading
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    document.getElementById('btnSpinner').style.display = 'block';
+    document.getElementById('btnText').textContent = 'กำลังส่ง...';
+
+    try {
+      // Get userId
+      const profile = await liff.getProfile();
+      const userId = profile.userId;
+
+      // Convert slip to base64
+      const slipBase64 = await toBase64(slipFile);
+
+      // POST to GAS
+      const res = await fetch(GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'LIFF_BOOKING',
+          userId, name, phone, room, checkIn, checkOut,
+          slipBase64,
+          slipMimeType: slipFile.type || 'image/jpeg'
+        })
       });
+
+      const result = await res.json();
+
+      if (result.success) {
+        clearInterval(timerInterval);
+        const nights = Math.round((new Date(checkOut) - new Date(checkIn)) / 86400000);
+        document.getElementById('successMsg').innerHTML =
+          `🏨 ห้อง ${room} | ${nights} คืน<br>` +
+          `📅 ${checkIn} → ${checkOut}<br><br>` +
+          `รอแอดมินยืนยันนะคะ 🙏`;
+        document.getElementById('successOverlay').classList.add('show');
+        setTimeout(() => liff.closeWindow(), 3000);
+      } else {
+        alert('❌ ' + (result.message || 'เกิดข้อผิดพลาด'));
+        btn.disabled = false;
+        document.getElementById('btnSpinner').style.display = 'none';
+        document.getElementById('btnText').textContent = '✅ ยืนยันการจอง';
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert('❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+      btn.disabled = false;
+      document.getElementById('btnSpinner').style.display = 'none';
+      document.getElementById('btnText').textContent = '✅ ยืนยันการจอง';
+    }
+  }
+
+  // ═══════════════════════
+  // Helper: file → base64
+  // ═══════════════════════
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = () => reject(new Error('อ่านไฟล์ไม่ได้'));
+      reader.readAsDataURL(file);
     });
-  </script>
+  }
+</script>
 </body>
 </html>
