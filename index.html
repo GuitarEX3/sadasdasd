@@ -37,7 +37,7 @@ body {
 }
 
 /* ── SCREENS ── */
-#screen-load, #screen-main, #screen-form {
+#screen-load, #screen-main, #screen-form, #screen-gallery {
   position: fixed; inset: 0;
   display: flex; flex-direction: column;
   transition: opacity 0.3s, transform 0.3s;
@@ -148,7 +148,7 @@ body {
 .room-card:active { transform: scale(0.99); }
 .room-card.free { border-color: var(--border); }
 .room-card.free:hover { border-color: rgba(200,169,110,0.35); }
-.room-card.busy { opacity: 0.55; cursor: default; }
+.room-card.busy { opacity: 0.55; }
 .room-card.mine {
   border-color: var(--gold);
   box-shadow: 0 0 0 1px var(--gold), 0 4px 24px rgba(200,169,110,0.15);
@@ -203,6 +203,208 @@ body {
 .book-btn:disabled {
   background: var(--surface2); color: var(--text3);
   box-shadow: none; cursor: default;
+}
+
+/* ── GALLERY SCREEN ── */
+#screen-gallery {
+  background: var(--bg);
+  z-index: 100;
+}
+
+.gallery-header {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 18px;
+  display: flex; align-items: center; gap: 12px;
+}
+.gallery-back {
+  background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--text2); width: 34px; height: 34px; border-radius: 10px;
+  font-size: 16px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.gallery-back:hover { background: rgba(200,169,110,0.2); color: var(--gold); }
+.gallery-header-info { flex: 1; }
+.gallery-room-name {
+  font-family: 'DM Serif Display',serif;
+  font-size: 20px; color: var(--gold); line-height: 1;
+}
+.gallery-room-desc { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+.gallery-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.gallery-slider-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.gallery-slider {
+  display: flex;
+  height: 100%;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  touch-action: pan-y;
+}
+
+.gallery-slide {
+  min-width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.gallery-slide img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: var(--r);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(22,22,31,0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border2);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 10;
+}
+.gallery-nav:hover {
+  background: rgba(200,169,110,0.2);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.gallery-nav:active { transform: translateY(-50%) scale(0.95); }
+.gallery-nav.prev { left: 16px; }
+.gallery-nav.next { right: 16px; }
+.gallery-nav:disabled {
+  opacity: 0.3;
+  cursor: default;
+  pointer-events: none;
+}
+
+.gallery-dots {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--surface);
+}
+
+.gallery-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.gallery-dot.active {
+  width: 24px;
+  border-radius: 4px;
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.gallery-info {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 16px 18px;
+}
+
+.gallery-room-full-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.gallery-room-full-desc {
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 12px;
+}
+
+.gallery-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.gallery-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.gallery-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.gallery-btn {
+  flex: 1;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Noto Sans Thai',sans-serif;
+  cursor: pointer;
+  transition: transform 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.gallery-btn:active { transform: scale(0.98); }
+
+.gallery-btn-book {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #1C1C2E;
+  box-shadow: 0 4px 16px rgba(200,169,110,0.3);
+}
+
+.gallery-btn-fill {
+  background: linear-gradient(135deg, var(--green), #50D4A0);
+  color: #0E1C16;
+  box-shadow: 0 4px 16px rgba(61,191,138,0.25);
+}
+
+.gallery-btn:disabled {
+  background: var(--surface2);
+  color: var(--text3);
+  box-shadow: none;
+  cursor: default;
 }
 
 /* ── FORM SCREEN ── */
@@ -418,6 +620,34 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rg
   <div class="rooms-scroll" id="roomsScroll"></div>
 </div>
 
+<!-- GALLERY SCREEN -->
+<div id="screen-gallery" class="hidden">
+  <div class="gallery-header">
+    <button class="gallery-back" onclick="closeGallery()">←</button>
+    <div class="gallery-header-info">
+      <div class="gallery-room-name" id="galleryRoomName">ห้อง A</div>
+      <div class="gallery-room-desc" id="galleryRoomDesc">แตะเพื่อดูรูปภาพ</div>
+    </div>
+  </div>
+
+  <div class="gallery-body">
+    <div class="gallery-slider-wrap">
+      <button class="gallery-nav prev" id="galleryPrev" onclick="slideGallery(-1)">‹</button>
+      <button class="gallery-nav next" id="galleryNext" onclick="slideGallery(1)">›</button>
+      <div class="gallery-slider" id="gallerySlider"></div>
+    </div>
+
+    <div class="gallery-dots" id="galleryDots"></div>
+
+    <div class="gallery-info">
+      <div class="gallery-room-full-name" id="galleryFullName">Deluxe Room A</div>
+      <div class="gallery-room-full-desc" id="galleryFullDesc">วิวสวน · ระเบียงส่วนตัว</div>
+      <div class="gallery-tags" id="galleryTags"></div>
+      <div class="gallery-actions" id="galleryActions"></div>
+    </div>
+  </div>
+</div>
+
 <!-- FORM SCREEN -->
 <div id="screen-form" class="hidden">
   <div class="form-topbar">
@@ -519,6 +749,88 @@ const IMGBB_KEY    = 'f02c86abd0edb6ce9d8e8f60bbf124af';
 const ROOMS        = ['A','B','C','D','E','F','G','H','I','J','K','L','M'];
 const DEADLINE_MIN = 30;
 
+// รูปภาพของแต่ละห้อง (ใส่ URL รูปจริงได้เลย)
+const ROOM_IMAGES = {
+  A: [
+    'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800',
+    'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800',
+    'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800',
+    'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800'
+  ],
+  B: [
+    'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=800',
+    'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800',
+    'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=800',
+    'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800'
+  ],
+  C: [
+    'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800',
+    'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800',
+    'https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800',
+    'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800'
+  ],
+  D: [
+    'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800',
+    'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=800',
+    'https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?w=800',
+    'https://images.unsplash.com/photo-1615873968403-89e068629265?w=800'
+  ],
+  E: [
+    'https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=800',
+    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800',
+    'https://images.unsplash.com/photo-1616047006789-b7af5afb8c20?w=800',
+    'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?w=800'
+  ],
+  F: [
+    'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800',
+    'https://images.unsplash.com/photo-1631049552240-59c37f38802b?w=800',
+    'https://images.unsplash.com/photo-1566195992011-5f6b21e539aa?w=800',
+    'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800'
+  ],
+  G: [
+    'https://images.unsplash.com/photo-1598928636135-d146006ff4be?w=800',
+    'https://images.unsplash.com/photo-1631049035182-249067d7618e?w=800',
+    'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800',
+    'https://images.unsplash.com/photo-1596701062351-8c2c14d1fdd0?w=800'
+  ],
+  H: [
+    'https://images.unsplash.com/photo-1582719189341-f53ba51c2795?w=800',
+    'https://images.unsplash.com/photo-1631049421450-348ccd7f8949?w=800',
+    'https://images.unsplash.com/photo-1591088398444-1ab87b4d4eaf?w=800',
+    'https://images.unsplash.com/photo-1553444836-bc6c8d340ba7?w=800'
+  ],
+  I: [
+    'https://images.unsplash.com/photo-1595526051245-c57e98ac3fdc?w=800',
+    'https://images.unsplash.com/photo-1631049307329-5a8fde88e5b0?w=800',
+    'https://images.unsplash.com/photo-1590490360836-48bac2f48eb5?w=800',
+    'https://images.unsplash.com/photo-1578898887155-72ddc3b97cd4?w=800'
+  ],
+  J: [
+    'https://images.unsplash.com/photo-1616047267365-4370ba8a6eac?w=800',
+    'https://images.unsplash.com/photo-1631049307390-4e5f0ff38fb3?w=800',
+    'https://images.unsplash.com/photo-1571624436279-b272aff752b5?w=800',
+    'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800'
+  ],
+  K: [
+    'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800',
+    'https://images.unsplash.com/photo-1631049035326-ca7c83734e48?w=800',
+    'https://images.unsplash.com/photo-1590490359683-658d3d23f972?w=800',
+    'https://images.unsplash.com/photo-1596701062351-8c2c14d1fdd0?w=800'
+  ],
+  L: [
+    'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800',
+    'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800',
+    'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=800',
+    'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800'
+  ],
+  M: [
+    'https://images.unsplash.com/photo-1631049552057-403cdb8f0658?w=800',
+    'https://images.unsplash.com/photo-1631049035242-61b0b0c52217?w=800',
+    'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800',
+    'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800'
+  ]
+};
+
 const ROOM_INFO = {
   A:{name:'Deluxe Room A',  desc:'วิวสวน · ระเบียงส่วนตัว',       tags:['WiFi','แอร์','น้ำอุ่น','ทีวี']},
   B:{name:'Superior Room B',desc:'เหมาะครอบครัว · พื้นที่กว้าง',  tags:['WiFi','แอร์','น้ำอุ่น','ระเบียง']},
@@ -537,11 +849,15 @@ const ROOM_INFO = {
 
 // State
 let userId      = null;
-let roomStates  = {};   // { A: {isFree: true}, ... }
+let roomStates  = {};
 let pendingRoom = null;
 let pendingEid  = null;
 let bookedAt    = null;
 let timerIv     = null;
+let currentGalleryRoom = null;
+let currentSlide = 0;
+let touchStartX = 0;
+let touchEndX = 0;
 
 // ─────────────────────────────────────────────
 // GAS fetch helper
@@ -563,7 +879,6 @@ window.addEventListener('load', async () => {
     const p = await liff.getProfile();
     userId = p.userId;
 
-    // โหลดห้อง + เช็ค pending พร้อมกัน
     const [roomData, pendingData] = await Promise.all([
       gasPost({ type: 'GET_ROOMS' }),
       gasPost({ type: 'CHECK_PENDING', userId })
@@ -595,7 +910,7 @@ function setMinDates() {
 }
 
 // ─────────────────────────────────────────────
-// RENDER
+// RENDER ROOMS
 function renderRooms() {
   const wrap   = document.getElementById('roomsScroll');
   const freeN  = ROOMS.filter(r => roomStates[r]?.isFree !== false).length;
@@ -626,6 +941,7 @@ function renderRooms() {
     const card = document.createElement('div');
     card.className = `room-card ${state}`;
     card.id = `card-${r}`;
+    card.onclick = () => openGallery(r);
     card.innerHTML = `
       <div class="card-inner">
         <div class="card-letter">${r}</div>
@@ -644,11 +960,144 @@ function renderRooms() {
 }
 
 // ─────────────────────────────────────────────
+// GALLERY
+function openGallery(room) {
+  currentGalleryRoom = room;
+  currentSlide = 0;
+  
+  const info = ROOM_INFO[room];
+  const images = ROOM_IMAGES[room] || [];
+  
+  // Update header
+  document.getElementById('galleryRoomName').textContent = `ห้อง ${room}`;
+  document.getElementById('galleryRoomDesc').textContent = 'แตะเพื่อดูรูปภาพ';
+  
+  // Update info section
+  document.getElementById('galleryFullName').textContent = info.name;
+  document.getElementById('galleryFullDesc').textContent = info.desc;
+  
+  // Tags
+  const tagsWrap = document.getElementById('galleryTags');
+  tagsWrap.innerHTML = info.tags.map(t => `<span class="gallery-tag">${t}</span>`).join('');
+  
+  // Render slides
+  const slider = document.getElementById('gallerySlider');
+  slider.innerHTML = images.map(img => 
+    `<div class="gallery-slide"><img src="${img}" alt="ห้อง ${room}"></div>`
+  ).join('');
+  
+  // Render dots
+  const dots = document.getElementById('galleryDots');
+  dots.innerHTML = images.map((_, i) => 
+    `<div class="gallery-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></div>`
+  ).join('');
+  
+  // Actions
+  const isMine = pendingRoom === room;
+  const isFree = roomStates[room]?.isFree !== false;
+  const actionsWrap = document.getElementById('galleryActions');
+  
+  if (isMine) {
+    actionsWrap.innerHTML = `
+      <button class="gallery-btn gallery-btn-fill" onclick="openFormFromGallery()">
+        📝 กรอกข้อมูล
+      </button>
+    `;
+  } else if (isFree) {
+    actionsWrap.innerHTML = `
+      <button class="gallery-btn gallery-btn-book" onclick="bookFromGallery()">
+        ✨ จองห้องนี้
+      </button>
+    `;
+  } else {
+    actionsWrap.innerHTML = `
+      <button class="gallery-btn" disabled>
+        🔒 ห้องไม่ว่าง
+      </button>
+    `;
+  }
+  
+  updateSlideButtons();
+  show('screen-gallery');
+  hide('screen-main');
+  
+  // Touch events for swipe
+  const sliderEl = document.getElementById('gallerySlider');
+  sliderEl.addEventListener('touchstart', handleTouchStart, false);
+  sliderEl.addEventListener('touchend', handleTouchEnd, false);
+}
+
+function closeGallery() {
+  hide('screen-gallery');
+  show('screen-main');
+  currentGalleryRoom = null;
+}
+
+function slideGallery(dir) {
+  const images = ROOM_IMAGES[currentGalleryRoom] || [];
+  currentSlide = Math.max(0, Math.min(currentSlide + dir, images.length - 1));
+  updateGallerySlide();
+}
+
+function goToSlide(index) {
+  currentSlide = index;
+  updateGallerySlide();
+}
+
+function updateGallerySlide() {
+  const slider = document.getElementById('gallerySlider');
+  slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+  
+  // Update dots
+  document.querySelectorAll('.gallery-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === currentSlide);
+  });
+  
+  updateSlideButtons();
+}
+
+function updateSlideButtons() {
+  const images = ROOM_IMAGES[currentGalleryRoom] || [];
+  document.getElementById('galleryPrev').disabled = currentSlide === 0;
+  document.getElementById('galleryNext').disabled = currentSlide === images.length - 1;
+}
+
+function handleTouchStart(e) {
+  touchStartX = e.changedTouches[0].screenX;
+}
+
+function handleTouchEnd(e) {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipe();
+}
+
+function handleSwipe() {
+  if (touchEndX < touchStartX - 50) {
+    slideGallery(1); // Swipe left
+  }
+  if (touchEndX > touchStartX + 50) {
+    slideGallery(-1); // Swipe right
+  }
+}
+
+async function bookFromGallery() {
+  closeGallery();
+  const btn = document.querySelector(`#card-${currentGalleryRoom} .book-btn`);
+  if (btn && !btn.disabled) {
+    btn.click();
+  }
+}
+
+function openFormFromGallery() {
+  closeGallery();
+  openForm();
+}
+
+// ─────────────────────────────────────────────
 // BOOK CLICK
 async function onBookClick(e, room) {
   e.stopPropagation();
 
-  // ถ้ามี pending อยู่ → เปิดฟอร์มห้องเดิม
   if (pendingRoom) {
     if (pendingRoom === room) { openForm(); return; }
     toast('info', `⏳ มีการจองห้อง ${pendingRoom} ค้างอยู่`);
@@ -671,7 +1120,6 @@ async function onBookClick(e, room) {
       ? Date.now() - (DEADLINE_MIN - d.remaining) * 60000
       : Date.now();
 
-    // อัปเดต cache ห้องนี้
     if (roomStates[room]) roomStates[room].isFree = false;
     startTimer();
     renderRooms();
@@ -747,10 +1195,12 @@ function openForm() {
   document.getElementById('formRoomTitle').textContent = `ห้อง ${pendingRoom}`;
   show('screen-form');
   hide('screen-main');
+  hide('screen-gallery');
 }
 function backToMain() {
   show('screen-main');
   hide('screen-form');
+  hide('screen-gallery');
 }
 
 function onDateChange() {
@@ -771,7 +1221,6 @@ function onDateChange() {
     document.getElementById('ciDisplay').textContent  = `${ciD} ${ciT}`;
     document.getElementById('coDisplay').textContent  = `${coD} ${coT}`;
     row.style.display = 'flex';
-    // ตั้ง min วันออก
     document.getElementById('fcoDate').min = ciD;
   } else {
     row.style.display = 'none';
@@ -818,7 +1267,6 @@ async function submitBooking() {
   document.getElementById('btnTxt').textContent = 'กำลังอัปโหลดสลิป...';
 
   try {
-    // อัปโหลด imgbb
     const b64 = await toBase64(file);
     const fd  = new FormData(); fd.append('image', b64);
     const ir  = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: 'POST', body: fd });
@@ -841,7 +1289,6 @@ async function submitBooking() {
       await doRefresh();
       backToMain();
       toast('ok', '🎉 จองสำเร็จ! รอแอดมินยืนยันนะคะ');
-      // reset form
       ['fname','fphone','fciDate','fciTime','fcoDate','fcoTime'].forEach(id => {
         document.getElementById(id).value = id==='fciTime'?'14:00':id==='fcoTime'?'12:00':'';
       });
