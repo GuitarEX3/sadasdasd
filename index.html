@@ -2,278 +2,506 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>จองที่พัก</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
-:root{
-  --ink:#1C1C2E;--ink2:#3D3D55;--muted:#8888A8;
-  --border:#E2E2EE;--bg:#F8F8FC;--card:#FFFFFF;
-  --gold:#C9A96E;--gold2:#E8C98A;
-  --teal:#2A7F6F;--teal2:#3AA08D;
-  --red:#C04A3A;--warn:#E07830;
-  --radius:16px;--shadow:0 2px 20px rgba(28,28,46,0.08);
+:root {
+  --bg: #0E0E14;
+  --surface: #16161F;
+  --surface2: #1E1E2A;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --gold: #C8A96E;
+  --gold2: #E2C98E;
+  --goldfade: rgba(200,169,110,0.12);
+  --green: #3DBF8A;
+  --greenfade: rgba(61,191,138,0.12);
+  --red: #E05555;
+  --redfade: rgba(224,85,85,0.1);
+  --amber: #E09040;
+  --text: #F0F0F8;
+  --text2: #9090B0;
+  --text3: #5A5A78;
+  --r: 14px;
+  --r2: 10px;
 }
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { height:100%; overflow:hidden; }
+body {
+  font-family: 'Noto Sans Thai', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+}
 
-/* HEADER */
-.header{background:var(--ink);padding:36px 20px 52px;text-align:center;position:relative;overflow:hidden}
-.header-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(201,169,110,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(201,169,110,0.06) 1px,transparent 1px);background-size:32px 32px}
-.header-glow{position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(201,169,110,0.15) 0%,transparent 70%);top:-100px;left:50%;transform:translateX(-50%)}
-.header-tag{display:inline-block;border:1px solid rgba(201,169,110,0.4);color:var(--gold);font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:12px;position:relative;z-index:1}
-.header h1{font-family:'Playfair Display',serif;color:#fff;font-size:28px;font-weight:700;line-height:1.2;position:relative;z-index:1}
-.header h1 span{color:var(--gold)}
-.header p{color:rgba(255,255,255,0.5);font-size:12px;margin-top:6px;font-weight:300;letter-spacing:0.5px;position:relative;z-index:1}
+/* ── SCREENS ── */
+#screen-load, #screen-main, #screen-form {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  transition: opacity 0.3s, transform 0.3s;
+}
+.hidden { opacity:0!important; pointer-events:none!important; transform:translateY(12px)!important; }
 
-/* TIMER BAR */
-.timer-bar{display:none;background:var(--ink);padding:10px 20px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(201,169,110,0.2)}
-.timer-bar.active{display:flex}
-.timer-left{display:flex;align-items:center;gap:8px}
-.timer-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);animation:blink 1s ease-in-out infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-.timer-room{color:var(--gold);font-size:13px;font-weight:600}
-.timer-label{color:rgba(255,255,255,0.5);font-size:11px}
-.timer-count{font-family:'Playfair Display',serif;color:#fff;font-size:20px;font-weight:700}
-.timer-count.urgent{color:#FF6B6B;animation:pulse-u 0.5s ease-in-out infinite}
-@keyframes pulse-u{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-.timer-cancel{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:11px;font-weight:600;font-family:'Noto Sans Thai',sans-serif;padding:6px 12px;border-radius:8px;cursor:pointer;transition:all 0.2s}
-.timer-cancel:hover{background:rgba(192,74,58,0.3);border-color:var(--red)}
+/* ── LOADING ── */
+#screen-load {
+  align-items: center; justify-content: center; gap: 16px;
+  background: var(--bg);
+}
+.load-ring {
+  width: 44px; height: 44px;
+  border: 2.5px solid rgba(200,169,110,0.2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.load-txt { color: var(--text2); font-size: 13px; }
 
-/* ROOMS */
-.rooms-wrap{padding:0 16px;margin-top:-24px;position:relative;z-index:2}
-.section-header{display:flex;align-items:center;gap:10px;padding:20px 4px 12px}
-.section-line{flex:1;height:1px;background:var(--border)}
-.section-title{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
-.room-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden;border:1px solid var(--border);transition:transform 0.2s,box-shadow 0.2s}
-.room-card:active{transform:scale(0.99)}
-.room-card.is-mine{border-color:var(--gold);box-shadow:0 2px 24px rgba(201,169,110,0.2)}
-.room-card.is-booked{opacity:0.7}
-.room-img{height:180px;background:linear-gradient(135deg,#2A2A40 0%,#1C1C2E 100%);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.room-img-letter{font-family:'Playfair Display',serif;font-size:72px;color:rgba(201,169,110,0.15);font-weight:700;user-select:none}
-.room-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.room-status-pill{position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;backdrop-filter:blur(10px);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
-.pill-free{background:rgba(42,127,111,0.9);color:#fff}
-.pill-mine{background:rgba(201,169,110,0.95);color:#1C1C2E}
-.pill-busy{background:rgba(192,74,58,0.9);color:#fff}
-.pill-dot{width:6px;height:6px;background:currentColor;border-radius:50%;opacity:0.8}
-.room-body{padding:16px 16px 18px}
-.room-num-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.room-num{width:34px;height:34px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--ink);box-shadow:0 3px 10px rgba(201,169,110,0.3);flex-shrink:0}
-.room-name{font-size:16px;font-weight:700;color:var(--ink)}
-.room-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px}
-.room-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-.tag{font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;background:#F0F0F8;color:var(--ink2)}
+/* ── MAIN SCREEN ── */
+#screen-main { overflow: hidden; }
 
-/* BUTTONS */
-.btn-book{width:100%;padding:13px;background:var(--ink);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;position:relative;overflow:hidden}
-.btn-book::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--gold),var(--gold2));opacity:0;transition:opacity 0.3s}
-.btn-book:not(:disabled):hover::after{opacity:1}
-.btn-book span{position:relative;z-index:1}
-.btn-book:disabled{background:#DDDDE8;color:var(--muted);cursor:not-allowed}
-.btn-book.mine-btn{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--ink)}
+.topbar {
+  flex-shrink: 0;
+  padding: 16px 18px 0;
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.topbar-brand { display: flex; flex-direction: column; gap: 2px; }
+.brand-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  color: var(--gold); text-transform: uppercase;
+}
+.brand-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px; color: var(--text); line-height: 1;
+}
+.topbar-badge {
+  background: var(--goldfade);
+  border: 1px solid rgba(200,169,110,0.25);
+  border-radius: 20px; padding: 5px 11px;
+  font-size: 11px; font-weight: 600; color: var(--gold);
+}
 
-/* CONFIRM MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(28,28,46,0.7);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
-.modal-overlay.show{display:flex;animation:fadeIn 0.2s}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.confirm-sheet{background:var(--card);border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:500px;animation:slideUp 0.3s cubic-bezier(0.34,1.4,0.64,1)}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.sheet-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
-.sheet-icon{font-size:40px;text-align:center;margin-bottom:12px}
-.sheet-title{font-size:18px;font-weight:700;text-align:center;margin-bottom:6px}
-.sheet-sub{font-size:13px;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:24px}
-.sheet-room-badge{background:linear-gradient(135deg,var(--ink),#2A2A40);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin-bottom:20px}
-.badge-letter{font-family:'Playfair Display',serif;font-size:28px;color:var(--gold);font-weight:700;width:44px;text-align:center}
-.badge-info-text{color:rgba(255,255,255,0.9);font-size:14px;font-weight:600}
-.badge-info-sub{color:rgba(255,255,255,0.4);font-size:11px;margin-top:2px}
-.sheet-warn{background:#FFF8F0;border:1px solid rgba(224,120,48,0.3);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--warn);display:flex;align-items:flex-start;gap:8px;margin-bottom:20px;line-height:1.5}
-.btn-confirm{width:100%;padding:15px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--ink);border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 16px rgba(201,169,110,0.35);transition:transform 0.15s}
-.btn-confirm:active{transform:scale(0.98)}
-.btn-no{width:100%;padding:13px;background:none;border:1.5px solid var(--border);border-radius:12px;color:var(--muted);font-size:14px;font-weight:600;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;transition:all 0.2s}
-.btn-no:hover{border-color:var(--ink2);color:var(--ink)}
+/* Timer bar */
+.timer-strip {
+  flex-shrink: 0;
+  margin: 12px 18px 0;
+  background: var(--goldfade);
+  border: 1px solid rgba(200,169,110,0.25);
+  border-radius: var(--r2);
+  padding: 9px 14px;
+  display: flex; align-items: center; gap: 10px;
+  display: none;
+}
+.timer-strip.on { display: flex; }
+.timer-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--gold); flex-shrink: 0;
+  animation: blink 1s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.timer-label { font-size: 12px; color: var(--gold); font-weight: 600; flex: 1; }
+.timer-val { font-family: 'DM Serif Display',serif; font-size: 18px; color: var(--text); }
+.timer-val.urgent { color: var(--red); animation: pulse 0.5s infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.07)} }
+.timer-cancel {
+  background: rgba(224,85,85,0.15); border: 1px solid rgba(224,85,85,0.3);
+  color: var(--red); font-size: 11px; font-weight: 700;
+  font-family: 'Noto Sans Thai',sans-serif;
+  padding: 5px 10px; border-radius: 7px; cursor: pointer;
+}
 
-/* FORM SHEET */
-.form-sheet-overlay{display:none;position:fixed;inset:0;background:rgba(28,28,46,0.75);z-index:300;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
-.form-sheet-overlay.show{display:flex}
-.form-sheet{background:var(--bg);border-radius:24px 24px 0 0;width:100%;max-width:500px;max-height:92vh;display:flex;flex-direction:column;animation:slideUp 0.35s cubic-bezier(0.34,1.2,0.64,1)}
-.form-header{background:var(--ink);border-radius:24px 24px 0 0;padding:16px 20px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.form-header-left{display:flex;align-items:center;gap:10px}
-.form-header-room{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold);font-weight:700}
-.form-header-title{color:#fff;font-size:13px;font-weight:600}
-.form-header-sub{color:rgba(255,255,255,0.4);font-size:11px}
-.form-close{background:rgba(255,255,255,0.1);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s}
-.form-close:hover{background:rgba(192,74,58,0.4)}
-.form-scroll{overflow-y:auto;flex:1;padding:16px 16px 32px}
-.fcard{background:var(--card);border-radius:14px;padding:18px 16px;margin-bottom:12px;border:1px solid var(--border)}
-.fcard-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:6px}
-.field{margin-bottom:14px}
-.field:last-child{margin-bottom:0}
-label{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:6px}
-.req{color:var(--red)}
-input[type=text],input[type=tel],input[type=date]{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;color:var(--ink);background:#FAFAFE;transition:border-color 0.2s,box-shadow 0.2s;-webkit-appearance:none}
-input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,169,110,0.12);background:#fff}
-.date-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.nights-pill{display:flex;align-items:center;gap:6px;background:#F0F0F8;color:var(--ink2);font-size:12px;font-weight:600;padding:8px 12px;border-radius:8px;margin-top:8px}
-.slip-zone{border:2px dashed var(--border);border-radius:12px;padding:22px;text-align:center;cursor:pointer;background:#FAFAFE;transition:all 0.2s;position:relative}
-.slip-zone:hover{border-color:var(--gold);background:#FFFBF5}
-.slip-zone.has-file{border-color:var(--teal);background:#F0FAF8}
-.slip-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.slip-icon{font-size:28px;margin-bottom:6px}
-.slip-text{font-size:13px;color:var(--muted);font-weight:500}
-.slip-hint{font-size:11px;color:#AAAABB;margin-top:3px}
-.slip-preview{display:none;margin-top:10px}
-.slip-preview img{width:100%;max-height:180px;object-fit:contain;border-radius:10px;border:1.5px solid var(--border)}
-.slip-ok{font-size:12px;color:var(--teal);font-weight:600;margin-top:6px;display:flex;align-items:center;gap:4px}
-.btn-submit{width:100%;padding:15px;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;margin-top:4px;box-shadow:0 4px 20px rgba(42,127,111,0.3);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform 0.15s,box-shadow 0.15s}
-.btn-submit:active{transform:scale(0.98)}
-.btn-submit:disabled{background:#DDDDE8;box-shadow:none;cursor:not-allowed}
-.spin{width:16px;height:16px;border:2.5px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:spinning 0.8s linear infinite;display:none}
-@keyframes spinning{to{transform:rotate(360deg)}}
+/* Subtitle row */
+.subtitle-row {
+  flex-shrink: 0;
+  padding: 10px 18px 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.subtitle { font-size: 12px; color: var(--text3); font-weight: 500; }
+.refresh-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--text3); font-size: 18px; padding: 2px 4px;
+  transition: color 0.2s, transform 0.3s;
+}
+.refresh-btn:hover { color: var(--gold); }
+.refresh-btn.spinning { animation: spin 0.8s linear infinite; }
 
-/* TOAST */
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:14px 20px;border-radius:14px;font-size:13px;font-weight:600;box-shadow:0 8px 32px rgba(28,28,46,0.3);display:flex;align-items:center;gap:10px;opacity:0;transition:all 0.35s;z-index:999;pointer-events:none;max-width:calc(100vw - 40px)}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.success .toast-bar{background:var(--teal)}
-.toast.error   .toast-bar{background:var(--red)}
-.toast-bar{width:3px;height:32px;border-radius:2px;flex-shrink:0;background:var(--gold)}
+/* Rooms grid */
+.rooms-scroll {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 0 18px 32px;
+  -webkit-overflow-scrolling: touch;
+}
+.rooms-scroll::-webkit-scrollbar { display: none; }
 
-/* LOADING / SKELETON */
-.loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:14px}
-.loader{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spinning 0.9s linear infinite}
-.loader-text{color:var(--muted);font-size:13px}
-.skel{background:linear-gradient(90deg,#EEEEF4 25%,#F5F5FA 50%,#EEEEF4 75%);background-size:200% 100%;animation:shim 1.4s infinite;border-radius:var(--radius);height:280px;margin-bottom:16px}
-@keyframes shim{to{background-position:-200% 0}}
-.err-screen{margin:40px 20px;padding:20px;background:#FEF0EE;border-left:4px solid var(--red);border-radius:12px;color:var(--red);font-size:14px}
+.room-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+.room-card:active { transform: scale(0.99); }
+.room-card.free { border-color: var(--border); }
+.room-card.free:hover { border-color: rgba(200,169,110,0.35); }
+.room-card.busy { opacity: 0.55; cursor: default; }
+.room-card.mine {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold), 0 4px 24px rgba(200,169,110,0.15);
+}
+
+.card-inner {
+  display: flex; align-items: center;
+  padding: 14px 16px; gap: 14px;
+}
+.card-letter {
+  width: 46px; height: 46px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--surface2), #252535);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Serif Display',serif; font-size: 22px; color: var(--gold);
+}
+.card-info { flex: 1; min-width: 0; }
+.card-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.card-desc { font-size: 11px; color: var(--text3); white-space: nowrap; overflow:hidden; text-overflow:ellipsis; }
+.card-tags { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+.ctag {
+  font-size: 10px; font-weight: 600; color: var(--text3);
+  background: var(--surface2); border: 1px solid var(--border);
+  padding: 2px 7px; border-radius: 5px;
+}
+.card-right { flex-shrink: 0; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.status-pill {
+  font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px;
+  display: flex; align-items: center; gap: 4px;
+  white-space: nowrap;
+}
+.pill-free  { background: var(--greenfade); color: var(--green); }
+.pill-busy  { background: var(--redfade);   color: var(--red); }
+.pill-mine  { background: var(--goldfade);  color: var(--gold); }
+.s-dot { width:5px; height:5px; border-radius:50%; background:currentColor; }
+
+.book-btn {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #1C1C2E; font-size: 11px; font-weight: 800;
+  font-family: 'Noto Sans Thai',sans-serif;
+  border: none; border-radius: 8px; padding: 7px 13px; cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 10px rgba(200,169,110,0.25);
+}
+.book-btn:active { transform: scale(0.96); }
+.book-btn.fill-btn {
+  background: linear-gradient(135deg, #3DBF8A, #50D4A0);
+  box-shadow: 0 2px 10px rgba(61,191,138,0.2);
+}
+.book-btn:disabled {
+  background: var(--surface2); color: var(--text3);
+  box-shadow: none; cursor: default;
+}
+
+/* ── FORM SCREEN ── */
+#screen-form {
+  background: var(--bg);
+  transform: translateY(0);
+}
+.form-topbar {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 18px;
+  display: flex; align-items: center; gap: 12px;
+}
+.form-back {
+  background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--text2); width: 34px; height: 34px; border-radius: 10px;
+  font-size: 16px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.form-back:hover { background: rgba(224,85,85,0.2); color: var(--red); }
+.form-topbar-info { flex: 1; }
+.form-topbar-room {
+  font-family: 'DM Serif Display',serif;
+  font-size: 20px; color: var(--gold); line-height: 1;
+}
+.form-topbar-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.form-timer {
+  text-align: right;
+}
+.form-timer-val {
+  font-family: 'DM Serif Display',serif; font-size: 18px; color: var(--text);
+  display: block;
+}
+.form-timer-val.urgent { color: var(--red); }
+.form-timer-lbl { font-size: 10px; color: var(--text3); }
+
+.form-scroll {
+  flex: 1; overflow-y: auto;
+  padding: 16px 18px 100px;
+  -webkit-overflow-scrolling: touch;
+}
+.form-scroll::-webkit-scrollbar { display: none; }
+
+.fblock {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 14px;
+  margin-bottom: 10px;
+}
+.fblock-title {
+  font-size: 10px; font-weight: 700; color: var(--text3);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+}
+.field { margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+.field label {
+  display: block; font-size: 11px; font-weight: 600;
+  color: var(--text2); margin-bottom: 6px;
+}
+.req { color: var(--red); }
+
+/* Inputs */
+input[type=text], input[type=tel] {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border2);
+  border-radius: var(--r2);
+  padding: 11px 13px;
+  font-size: 14px;
+  font-family: 'Noto Sans Thai',sans-serif;
+  color: var(--text);
+  -webkit-appearance: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,169,110,0.1); }
+
+/* Date-time grid */
+.dt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.dt-field label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 5px; }
+
+/* Custom date/time selector */
+.dt-input-wrap { position: relative; }
+.dt-input-wrap input[type=date],
+.dt-input-wrap input[type=time] {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border2);
+  border-radius: var(--r2);
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: 'Noto Sans Thai',sans-serif;
+  color: var(--text);
+  -webkit-appearance: none;
+  color-scheme: dark;
+  transition: border-color 0.2s;
+}
+.dt-input-wrap input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,169,110,0.1); }
+
+.nights-row {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--surface2); border-radius: var(--r2);
+  padding: 8px 12px; margin-top: 8px;
+  font-size: 12px; color: var(--text2); font-weight: 500;
+}
+.nights-val { color: var(--gold); font-weight: 700; }
+
+/* Slip upload */
+.slip-zone {
+  border: 1.5px dashed var(--border2);
+  border-radius: var(--r2); padding: 20px;
+  text-align: center; cursor: pointer;
+  background: var(--surface2);
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+}
+.slip-zone:hover { border-color: var(--gold); }
+.slip-zone.has { border-color: var(--green); border-style: solid; background: var(--greenfade); }
+.slip-zone input[type=file] {
+  position: absolute; inset: 0; opacity: 0;
+  cursor: pointer; width: 100%; height: 100%;
+}
+.slip-ico { font-size: 26px; margin-bottom: 5px; }
+.slip-txt { font-size: 12px; color: var(--text3); font-weight: 500; }
+.slip-ok { font-size: 12px; color: var(--green); font-weight: 600; margin-top: 6px; }
+.slip-preview { display: none; margin-top: 10px; }
+.slip-preview img {
+  width: 100%; max-height: 160px; object-fit: contain;
+  border-radius: 8px; border: 1px solid var(--border2);
+}
+
+/* Submit btn */
+.btn-submit-wrap {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  padding: 12px 18px 24px;
+  background: linear-gradient(to top, var(--bg) 70%, transparent);
+}
+.btn-submit {
+  width: 100%; padding: 15px;
+  background: linear-gradient(135deg, var(--green), #50D4A0);
+  color: #0E1C16; border: none; border-radius: 12px;
+  font-size: 15px; font-weight: 800;
+  font-family: 'Noto Sans Thai',sans-serif;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: 0 4px 24px rgba(61,191,138,0.25);
+  transition: transform 0.15s;
+}
+.btn-submit:active { transform: scale(0.98); }
+.btn-submit:disabled { background: var(--surface2); color: var(--text3); box-shadow: none; cursor: default; }
+.btn-spin {
+  width: 16px; height: 16px;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: none;
+}
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text); padding: 12px 18px; border-radius: 12px;
+  font-size: 13px; font-weight: 600;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  display: flex; align-items: center; gap: 10px;
+  opacity: 0; transition: all 0.3s; z-index: 999;
+  pointer-events: none; max-width: calc(100vw - 36px);
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast-bar { width: 3px; height: 28px; border-radius: 2px; flex-shrink: 0; }
+.toast.ok .toast-bar   { background: var(--green); }
+.toast.err .toast-bar  { background: var(--red); }
+.toast.info .toast-bar { background: var(--gold); }
 </style>
 </head>
 <body>
 
-<div id="loadingScreen" class="loading-screen">
-  <div class="loader"></div>
-  <span class="loader-text">กำลังโหลด...</span>
-</div>
-<div id="errorScreen" style="display:none">
-  <div class="err-screen" id="errMsg">❌ กรุณาเปิดผ่าน LINE</div>
+<!-- LOADING -->
+<div id="screen-load">
+  <div class="load-ring"></div>
+  <span class="load-txt">กำลังโหลด...</span>
 </div>
 
-<div id="mainContent" style="display:none">
-
-  <!-- Timer Bar -->
-  <div class="timer-bar" id="timerBar">
-    <div class="timer-left">
-      <div class="timer-dot"></div>
-      <div>
-        <div class="timer-room" id="timerRoomLabel">ห้อง A กำลังจอง</div>
-        <div class="timer-label">เหลือเวลากรอกข้อมูล</div>
-      </div>
+<!-- MAIN SCREEN -->
+<div id="screen-main" class="hidden">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <span class="brand-tag">Boutique</span>
+      <span class="brand-name">ที่พักของเรา</span>
     </div>
-    <div class="timer-count" id="timerCount">30:00</div>
-    <button class="timer-cancel" onclick="cancelBooking()">ยกเลิก</button>
+    <span class="topbar-badge" id="roomCountBadge">13 ห้อง</span>
   </div>
 
-  <div class="header">
-    <div class="header-grid"></div>
-    <div class="header-glow"></div>
-    <div class="header-tag">13 ห้องพัก</div>
-    <h1>ที่พัก<span>ของเรา</span></h1>
-    <p>เลือกห้องที่ชอบแล้วจองได้เลย</p>
+  <div class="timer-strip" id="timerStrip">
+    <div class="timer-dot"></div>
+    <span class="timer-label" id="timerRoomLbl">ห้อง A — กำลังจอง</span>
+    <span class="timer-val" id="timerVal">30:00</span>
+    <button class="timer-cancel" onclick="doCancelPending()">ยกเลิก</button>
   </div>
 
-  <div class="rooms-wrap">
-    <div class="section-header">
-      <div class="section-line"></div>
-      <div class="section-title">ห้องทั้งหมด</div>
-      <div class="section-line"></div>
-    </div>
-    <div id="roomsContainer">
-      <div class="skel"></div>
-      <div class="skel"></div>
-    </div>
+  <div class="subtitle-row">
+    <span class="subtitle" id="subTitle">เลือกห้องพักที่ต้องการ</span>
+    <button class="refresh-btn" id="refreshBtn" onclick="doRefresh()" title="รีเฟรช">↻</button>
   </div>
 
+  <div class="rooms-scroll" id="roomsScroll"></div>
 </div>
 
-<!-- Confirm Modal -->
-<div class="modal-overlay" id="confirmModal">
-  <div class="confirm-sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-icon">🏨</div>
-    <div class="sheet-title">ยืนยันการจอง?</div>
-    <div class="sheet-sub">ระบบจะจองห้องนี้ให้คุณชั่วคราว<br>คุณมีเวลา 30 นาทีเพื่อกรอกข้อมูล</div>
-    <div class="sheet-room-badge">
-      <div class="badge-letter" id="confirmRoomLetter">A</div>
-      <div>
-        <div class="badge-info-text" id="confirmRoomName">Room A</div>
-        <div class="badge-info-sub">กดยืนยันเพื่อเริ่มขั้นตอนการจอง</div>
-      </div>
+<!-- FORM SCREEN -->
+<div id="screen-form" class="hidden">
+  <div class="form-topbar">
+    <button class="form-back" onclick="backToMain()">←</button>
+    <div class="form-topbar-info">
+      <div class="form-topbar-room" id="formRoomTitle">ห้อง A</div>
+      <div class="form-topbar-sub">กรอกข้อมูลการจอง</div>
     </div>
-    <div class="sheet-warn">⏱️ <span>ถ้าไม่กรอกข้อมูลครบภายใน 30 นาที ระบบจะคืนห้องให้อัตโนมัติ</span></div>
-    <button class="btn-confirm" onclick="confirmBooking()">✅ ยืนยัน จองห้องนี้</button>
-    <button class="btn-no" onclick="closeConfirm()">ไม่ใช่ตอนนี้</button>
+    <div class="form-timer">
+      <span class="form-timer-val" id="formTimerVal">30:00</span>
+      <span class="form-timer-lbl">เหลือเวลา</span>
+    </div>
   </div>
-</div>
 
-<!-- Form Sheet -->
-<div class="form-sheet-overlay" id="formSheetOverlay">
-  <div class="form-sheet">
-    <div class="form-header">
-      <div class="form-header-left">
-        <div class="form-header-room" id="formRoomLetter">A</div>
-        <div>
-          <div class="form-header-title" id="formRoomTitle">กรอกข้อมูลการจอง</div>
-          <div class="form-header-sub">กรุณากรอกให้ครบก่อนหมดเวลา</div>
-        </div>
+  <div class="form-scroll">
+    <!-- ผู้จอง -->
+    <div class="fblock">
+      <div class="fblock-title">👤 ข้อมูลผู้จอง</div>
+      <div class="field">
+        <label>ชื่อ-นามสกุล <span class="req">*</span></label>
+        <input type="text" id="fname" placeholder="สมชาย ใจดี" autocomplete="off">
       </div>
-      <button class="form-close" onclick="cancelBooking()">✕</button>
+      <div class="field">
+        <label>เบอร์โทร <span class="req">*</span></label>
+        <input type="tel" id="fphone" placeholder="0812345678">
+      </div>
     </div>
-    <div class="form-scroll">
-      <div class="fcard">
-        <div class="fcard-title">👤 ข้อมูลผู้จอง</div>
-        <div class="field">
-          <label>ชื่อ-นามสกุล <span class="req">*</span></label>
-          <input type="text" id="fname" placeholder="สมชาย ใจดี" autocomplete="off">
-        </div>
-        <div class="field">
-          <label>เบอร์โทร <span class="req">*</span></label>
-          <input type="tel" id="fphone" placeholder="0812345678">
-        </div>
-      </div>
-      <div class="fcard">
-        <div class="fcard-title">📅 วันเข้าพัก</div>
-        <div class="date-row">
-          <div class="field">
-            <label>เช็คอิน <span class="req">*</span></label>
-            <input type="date" id="fcheckIn" onchange="calcNights()">
-          </div>
-          <div class="field">
-            <label>เช็คเอาท์ <span class="req">*</span></label>
-            <input type="date" id="fcheckOut" onchange="calcNights()">
+
+    <!-- วันที่ + เวลา -->
+    <div class="fblock">
+      <div class="fblock-title">📅 วันที่และเวลา</div>
+      <div class="dt-grid">
+        <div class="dt-field">
+          <label>เช็คอิน <span class="req">*</span></label>
+          <div class="dt-input-wrap">
+            <input type="date" id="fciDate" onchange="onDateChange()">
           </div>
         </div>
-        <div id="nightsInfo" style="display:none" class="nights-pill">
-          🌙 <span id="nightsText"></span>
+        <div class="dt-field">
+          <label>เวลาเช็คอิน <span class="req">*</span></label>
+          <div class="dt-input-wrap">
+            <input type="time" id="fciTime" value="14:00" onchange="onDateChange()">
+          </div>
+        </div>
+        <div class="dt-field">
+          <label>เช็คเอาท์ <span class="req">*</span></label>
+          <div class="dt-input-wrap">
+            <input type="date" id="fcoDate" onchange="onDateChange()">
+          </div>
+        </div>
+        <div class="dt-field">
+          <label>เวลาเช็คเอาท์ <span class="req">*</span></label>
+          <div class="dt-input-wrap">
+            <input type="time" id="fcoTime" value="12:00" onchange="onDateChange()">
+          </div>
         </div>
       </div>
-      <div class="fcard">
-        <div class="fcard-title">💳 สลิปโอนเงิน</div>
-        <div class="slip-zone" id="slipZone">
-          <input type="file" id="fslip" accept="image/*" onchange="previewSlip(event)">
-          <div class="slip-icon">📎</div>
-          <div class="slip-text">แตะเพื่ออัปโหลดสลิป</div>
-          <div class="slip-hint">JPG, PNG สูงสุด 5MB</div>
-        </div>
-        <div class="slip-preview" id="slipPreview">
-          <img id="slipImg" src="" alt="">
-          <div class="slip-ok">✅ แนบสลิปเรียบร้อย</div>
-        </div>
+      <div id="nightsRow" class="nights-row" style="display:none">
+        🌙 จำนวน <span class="nights-val" id="nightsVal">0</span> คืน
+        &nbsp;·&nbsp; เช็คอิน <span id="ciDisplay">-</span> &nbsp;→&nbsp; เช็คเอาท์ <span id="coDisplay">-</span>
       </div>
-      <button class="btn-submit" id="btnSubmit" onclick="submitForm()">
-        <div class="spin" id="btnSpin"></div>
-        <span id="btnTxt">✅ ยืนยันการจอง</span>
-      </button>
     </div>
+
+    <!-- สลิป -->
+    <div class="fblock">
+      <div class="fblock-title">💳 สลิปโอนเงิน</div>
+      <div class="slip-zone" id="slipZone">
+        <input type="file" id="fslip" accept="image/*" onchange="previewSlip(event)">
+        <div class="slip-ico">📎</div>
+        <div class="slip-txt">แตะเพื่ออัปโหลดสลิป</div>
+        <div class="slip-txt" style="font-size:10px;margin-top:3px;opacity:.6">JPG/PNG · สูงสุด 5MB</div>
+      </div>
+      <div class="slip-preview" id="slipPreview">
+        <img id="slipImg" src="" alt="">
+        <div class="slip-ok">✅ แนบสลิปแล้ว</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-submit-wrap">
+    <button class="btn-submit" id="btnSubmit" onclick="submitBooking()">
+      <div class="btn-spin" id="btnSpin"></div>
+      <span id="btnTxt">✅ ยืนยันการจอง</span>
+    </button>
   </div>
 </div>
 
@@ -284,250 +512,377 @@ input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,
 </div>
 
 <script>
-const GAS_URL   = 'https://script.google.com/macros/s/AKfycbz6DpIH2924OtfmTvxPU6JeUBWYt1dJEEZafiyCwZAvWef2tC-Cxt_X_YalE84D3euiBA/exec';
-const LIFF_ID   = '2009597872-3RfPCP2A';
-const IMGBB_KEY = 'f02c86abd0edb6ce9d8e8f60bbf124af';
-const ROOMS     = ['A','B','C','D','E','F','G','H','I','J','K','L','M'];
-const DEADLINE_MINUTES = 30;
+// ─────────────────────────────────────────────
+const GAS_URL      = 'https://script.google.com/macros/s/AKfycbyJES4wWcbKS8e39iZI8ZfS_QMR95PEK3mwhrp1JZl_ff79BAHpt2NOl6M4yiIsMGvJ2A/exec';
+const LIFF_ID      = '2009597872-3RfPCP2A';
+const IMGBB_KEY    = 'f02c86abd0edb6ce9d8e8f60bbf124af';
+const ROOMS        = ['A','B','C','D','E','F','G','H','I','J','K','L','M'];
+const DEADLINE_MIN = 30;
 
 const ROOM_INFO = {
-  A:{name:'Deluxe Room A',  desc:'ห้องกว้าง วิวสวน สิ่งอำนวยความสะดวกครบครัน', tags:['WiFi','แอร์','น้ำอุ่น','ทีวี']},
-  B:{name:'Superior Room B',desc:'ห้องสำหรับครอบครัว พร้อมระเบียงส่วนตัว',       tags:['WiFi','แอร์','น้ำอุ่น','ระเบียง']},
-  C:{name:'Standard Room C',desc:'สะอาด สะดวกสบาย ราคาประหยัด',                   tags:['WiFi','แอร์','น้ำอุ่น']},
-  D:{name:'Cozy Room D',    desc:'ห้องอบอุ่น เหมาะกับคู่รักหรือเดินทางคนเดียว', tags:['WiFi','แอร์','เตียงคิงไซส์']},
-  E:{name:'Room E',desc:'ห้องพักสะดวกสบาย',tags:['WiFi','แอร์']},
-  F:{name:'Room F',desc:'ห้องพักสะดวกสบาย',tags:['WiFi','แอร์']},
-  G:{name:'Room G',desc:'ห้องพักสะดวกสบาย',tags:['WiFi','แอร์']},
-  H:{name:'Room H',desc:'ห้องพักสะดวกสบาย',tags:['WiFi','แอร์']},
-  I:{name:'Room I',desc:'ห้องพักสะดวกสบาย',tags:['WiFi','แอร์']},
-  J:{name:'Room J',desc:'ห้องพักสะดวกสบาย',tags:['WiFi','แอร์']},
-  K:{name:'Room K',desc:'ห้องพักสะดวกสบาย',tags:['WiFi','แอร์']},
-  L:{name:'Room L',desc:'ห้องพักสะดวกสบาย',tags:['WiFi','แอร์']},
-  M:{name:'Room M',desc:'ห้องพักสะดวกสบาย',tags:['WiFi','แอร์']}
+  A:{name:'Deluxe Room A',  desc:'วิวสวน · ระเบียงส่วนตัว',       tags:['WiFi','แอร์','น้ำอุ่น','ทีวี']},
+  B:{name:'Superior Room B',desc:'เหมาะครอบครัว · พื้นที่กว้าง',  tags:['WiFi','แอร์','น้ำอุ่น','ระเบียง']},
+  C:{name:'Standard Room C',desc:'สะอาด · สะดวกสบาย',             tags:['WiFi','แอร์','น้ำอุ่น']},
+  D:{name:'Cozy Room D',    desc:'เตียงคิงไซส์ · บรรยากาศอบอุ่น', tags:['WiFi','แอร์','คิงไซส์']},
+  E:{name:'Room E', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
+  F:{name:'Room F', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
+  G:{name:'Room G', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
+  H:{name:'Room H', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
+  I:{name:'Room I', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
+  J:{name:'Room J', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
+  K:{name:'Room K', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
+  L:{name:'Room L', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
+  M:{name:'Room M', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
 };
 
-let userId=null, roomStatuses={}, pendingRoom=null, pendingEvent=null, bookedAt=null, timerInterval=null, selectRoom=null;
+// State
+let userId      = null;
+let roomStates  = {};   // { A: {isFree: true}, ... }
+let pendingRoom = null;
+let pendingEid  = null;
+let bookedAt    = null;
+let timerIv     = null;
 
-// ── INIT ──
-window.onload = async () => {
+// ─────────────────────────────────────────────
+// GAS fetch helper
+async function gasPost(body) {
+  const r = await fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+    body: JSON.stringify(body)
+  });
+  return r.json();
+}
+
+// ─────────────────────────────────────────────
+// INIT
+window.addEventListener('load', async () => {
   try {
     await liff.init({ liffId: LIFF_ID });
     if (!liff.isLoggedIn()) { liff.login(); return; }
     const p = await liff.getProfile();
     userId = p.userId;
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('fcheckIn').min  = today;
-    document.getElementById('fcheckOut').min = today;
-    document.getElementById('loadingScreen').style.display = 'none';
-    document.getElementById('mainContent').style.display   = 'block';
-    await loadStatuses();
-    renderRooms();
-  } catch(e) {
-    document.getElementById('loadingScreen').style.display = 'none';
-    document.getElementById('errorScreen').style.display   = 'block';
-    document.getElementById('errMsg').textContent = '❌ กรุณาเปิดผ่าน LINE (' + e.message + ')';
-  }
-};
 
-// ── LOAD STATUSES ──
-async function loadStatuses() {
-  try {
-    const r = await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({type:'GET_ROOMS'})});
-    const d = await r.json();
-    if (d.success) roomStatuses = d.rooms;
-  } catch(e){ console.error(e); }
-}
+    // โหลดห้อง + เช็ค pending พร้อมกัน
+    const [roomData, pendingData] = await Promise.all([
+      gasPost({ type: 'GET_ROOMS' }),
+      gasPost({ type: 'CHECK_PENDING', userId })
+    ]);
 
-// ── RENDER ──
-function renderRooms() {
-  const wrap = document.getElementById('roomsContainer');
-  wrap.innerHTML = '';
-  ROOMS.forEach(r => {
-    const info    = ROOM_INFO[r]||{name:'Room '+r,desc:'',tags:[]};
-    const isFree  = roomStatuses[r] ? roomStatuses[r].isFree : true;
-    const isMine  = pendingRoom === r;
+    if (roomData.success) roomStates = roomData.rooms;
 
-    let pillCls,pillTxt,btnLbl,btnDis,btnCls;
-    if (isMine) {
-      pillCls='pill-mine'; pillTxt='⏳ กำลังจอง';
-      btnLbl='📝 กรอกข้อมูล'; btnDis=false; btnCls='mine-btn';
-    } else if (isFree) {
-      pillCls='pill-free'; pillTxt='✅ ว่าง';
-      btnLbl='🛏️ จองห้องนี้'; btnDis=false; btnCls='';
-    } else {
-      pillCls='pill-busy'; pillTxt='🔴 ไม่ว่าง';
-      btnLbl='🔒 ไม่สามารถจองได้'; btnDis=true; btnCls='';
+    if (pendingData.success) {
+      pendingRoom = pendingData.room;
+      pendingEid  = pendingData.eventId;
+      bookedAt    = Date.now() - (DEADLINE_MIN - pendingData.remaining) * 60000;
+      startTimer();
     }
 
-    const onclick = isMine ? 'openForm()' : `askConfirm('${r}')`;
+    show('screen-main');
+    renderRooms();
+    setMinDates();
+  } catch(e) {
+    show('screen-main');
+    toast('err', '❌ กรุณาเปิดผ่าน LINE');
+  }
+  hide('screen-load');
+});
+
+function setMinDates() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('fciDate').min = today;
+  document.getElementById('fcoDate').min = today;
+}
+
+// ─────────────────────────────────────────────
+// RENDER
+function renderRooms() {
+  const wrap   = document.getElementById('roomsScroll');
+  const freeN  = ROOMS.filter(r => roomStates[r]?.isFree !== false).length;
+  document.getElementById('roomCountBadge').textContent = `${freeN} ว่าง`;
+  document.getElementById('subTitle').textContent = freeN > 0 ? 'เลือกห้องพักที่ต้องการ' : 'ไม่มีห้องว่างขณะนี้';
+
+  wrap.innerHTML = '';
+  ROOMS.forEach(r => {
+    const info  = ROOM_INFO[r];
+    const isMine = pendingRoom === r;
+    const isFree = roomStates[r]?.isFree !== false;
+    const state  = isMine ? 'mine' : isFree ? 'free' : 'busy';
+
+    let pill, btnTxt, btnCls = '', btnDis = false;
+    if (isMine) {
+      pill   = `<span class="s-dot"></span>กำลังจอง`;
+      btnTxt = '📝 กรอกข้อมูล';
+      btnCls = 'fill-btn';
+    } else if (isFree) {
+      pill   = `<span class="s-dot"></span>ว่าง`;
+      btnTxt = 'จองเลย';
+    } else {
+      pill   = `<span class="s-dot"></span>ไม่ว่าง`;
+      btnTxt = 'ไม่ว่าง';
+      btnDis = true;
+    }
+
     const card = document.createElement('div');
-    card.className = 'room-card'+(isMine?' is-mine':(!isFree?' is-booked':''));
-    card.id = 'card-'+r;
+    card.className = `room-card ${state}`;
+    card.id = `card-${r}`;
     card.innerHTML = `
-      <div class="room-img">
-        <div class="room-img-letter">${r}</div>
-        <div class="room-status-pill ${pillCls}"><span class="pill-dot"></span>${pillTxt}</div>
-      </div>
-      <div class="room-body">
-        <div class="room-num-row">
-          <div class="room-num">${r}</div>
-          <div class="room-name">${info.name}</div>
+      <div class="card-inner">
+        <div class="card-letter">${r}</div>
+        <div class="card-info">
+          <div class="card-name">${info.name}</div>
+          <div class="card-desc">${info.desc}</div>
+          <div class="card-tags">${info.tags.map(t=>`<span class="ctag">${t}</span>`).join('')}</div>
         </div>
-        <div class="room-desc">${info.desc}</div>
-        <div class="room-tags">${info.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-        <button class="btn-book ${btnCls}" onclick="${onclick}" ${btnDis?'disabled':''}>
-          <span>${btnLbl}</span>
-        </button>
+        <div class="card-right">
+          <span class="status-pill pill-${state === 'mine' ? 'mine' : state === 'free' ? 'free' : 'busy'}">${pill}</span>
+          <button class="book-btn ${btnCls}" ${btnDis?'disabled':''} onclick="onBookClick(event,'${r}')">${btnTxt}</button>
+        </div>
       </div>`;
     wrap.appendChild(card);
   });
 }
 
-// ── CONFIRM FLOW ──
-function askConfirm(room) {
-  if (pendingRoom && pendingRoom !== room) {
-    showToast('error','⚠️ คุณมีการจองห้อง '+pendingRoom+' ที่รอกรอกข้อมูลอยู่'); return;
+// ─────────────────────────────────────────────
+// BOOK CLICK
+async function onBookClick(e, room) {
+  e.stopPropagation();
+
+  // ถ้ามี pending อยู่ → เปิดฟอร์มห้องเดิม
+  if (pendingRoom) {
+    if (pendingRoom === room) { openForm(); return; }
+    toast('info', `⏳ มีการจองห้อง ${pendingRoom} ค้างอยู่`);
+    return;
   }
-  selectRoom = room;
-  const info = ROOM_INFO[room]||{name:'Room '+room};
-  document.getElementById('confirmRoomLetter').textContent = room;
-  document.getElementById('confirmRoomName').textContent   = info.name;
-  document.getElementById('confirmModal').classList.add('show');
-}
-function closeConfirm() {
-  document.getElementById('confirmModal').classList.remove('show');
-  selectRoom = null;
-}
-async function confirmBooking() {
-  const room = selectRoom; closeConfirm();
-  if (!room) return;
-  showToast('','⏳ กำลังจองห้อง '+room+'...');
+
+  const btn = e.currentTarget;
+  btn.disabled = true;
+  btn.textContent = '...';
+
   try {
-    const res  = await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({type:'QUICK_BOOK',userId,room})});
-    const data = await res.json();
-    if (!data.success) { showToast('error','❌ '+(data.message||'จองไม่สำเร็จ')); return; }
-    pendingRoom=room; pendingEvent=data.eventId; bookedAt=Date.now();
+    const d = await gasPost({ type: 'QUICK_BOOK', userId, room });
+    if (!d.success) {
+      toast('err', `❌ ${d.message || 'จองไม่สำเร็จ'}`);
+      btn.disabled = false; btn.textContent = 'จองเลย'; return;
+    }
+    pendingRoom = room;
+    pendingEid  = d.eventId;
+    bookedAt    = d.alreadyPending
+      ? Date.now() - (DEADLINE_MIN - d.remaining) * 60000
+      : Date.now();
+
+    // อัปเดต cache ห้องนี้
+    if (roomStates[room]) roomStates[room].isFree = false;
     startTimer();
-    await loadStatuses(); renderRooms(); openForm();
-  } catch(e) { showToast('error','❌ เกิดข้อผิดพลาด กรุณาลองใหม่'); }
+    renderRooms();
+    openForm();
+  } catch(e) {
+    toast('err', '❌ เกิดข้อผิดพลาด กรุณาลองใหม่');
+    btn.disabled = false; btn.textContent = 'จองเลย';
+  }
 }
 
-// ── CANCEL ──
-async function cancelBooking() {
-  if (!pendingRoom) { closeForm(); return; }
-  const room=pendingRoom, eid=pendingEvent;
-  clearInterval(timerInterval);
-  document.getElementById('timerBar').classList.remove('active');
-  closeForm();
-  pendingRoom=pendingEvent=bookedAt=null;
-  showToast('','🗑️ กำลังยกเลิก...');
+// ─────────────────────────────────────────────
+// CANCEL PENDING
+async function doCancelPending() {
+  if (!pendingRoom) return;
+  const room = pendingRoom, eid = pendingEid;
+  clearTimer();
+  pendingRoom = pendingEid = bookedAt = null;
+  if (roomStates[room]) roomStates[room].isFree = true;
+  renderRooms();
+  backToMain();
+  toast('info', `🗑️ ยกเลิกการจองห้อง ${room} แล้ว`);
+  try { await gasPost({ type: 'CANCEL_PENDING', userId, room, eventId: eid }); } catch(e) {}
+}
+
+// ─────────────────────────────────────────────
+// REFRESH
+async function doRefresh() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
   try {
-    await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({type:'CANCEL_PENDING',userId,room,eventId:eid})});
-  } catch(e){ console.error(e); }
-  await loadStatuses(); renderRooms();
-  showToast('','✅ ยกเลิกแล้ว ห้อง '+room+' ว่างแล้ว');
+    const d = await gasPost({ type: 'GET_ROOMS' });
+    if (d.success) { roomStates = d.rooms; renderRooms(); }
+  } catch(e) {}
+  btn.classList.remove('spinning');
 }
 
-// ── TIMER ──
+// ─────────────────────────────────────────────
+// TIMER
 function startTimer() {
-  document.getElementById('timerRoomLabel').textContent = 'ห้อง '+pendingRoom+' กำลังจอง';
-  document.getElementById('timerBar').classList.add('active');
-  updateTimer();
-  timerInterval = setInterval(updateTimer,1000);
+  const strip = document.getElementById('timerStrip');
+  strip.classList.add('on');
+  document.getElementById('timerRoomLbl').textContent = `ห้อง ${pendingRoom} — กำลังจอง`;
+  clearInterval(timerIv);
+  timerIv = setInterval(tickTimer, 1000);
+  tickTimer();
 }
-function updateTimer() {
+function tickTimer() {
   if (!bookedAt) return;
-  const left = DEADLINE_MINUTES*60 - Math.floor((Date.now()-bookedAt)/1000);
-  if (left <= 0) { clearInterval(timerInterval); onExpired(); return; }
-  const el = document.getElementById('timerCount');
-  el.textContent = String(Math.floor(left/60)).padStart(2,'0')+':'+String(left%60).padStart(2,'0');
-  el.classList.toggle('urgent', left<=120);
+  const left = DEADLINE_MIN * 60 - Math.floor((Date.now() - bookedAt) / 1000);
+  if (left <= 0) { onExpired(); return; }
+  const s = String(Math.floor(left/60)).padStart(2,'0') + ':' + String(left%60).padStart(2,'0');
+  const urgent = left <= 120;
+  document.getElementById('timerVal').textContent      = s;
+  document.getElementById('timerVal').className        = 'timer-val' + (urgent ? ' urgent' : '');
+  document.getElementById('formTimerVal').textContent  = s;
+  document.getElementById('formTimerVal').className    = 'form-timer-val' + (urgent ? ' urgent' : '');
+}
+function clearTimer() {
+  clearInterval(timerIv);
+  document.getElementById('timerStrip').classList.remove('on');
 }
 function onExpired() {
-  document.getElementById('timerBar').classList.remove('active');
-  closeForm(); pendingRoom=pendingEvent=bookedAt=null;
-  showToast('error','⏰ หมดเวลา ห้องถูกคืนแล้ว');
-  loadStatuses().then(renderRooms);
+  clearTimer();
+  pendingRoom = pendingEid = bookedAt = null;
+  backToMain();
+  doRefresh();
+  toast('err', '⏰ หมดเวลา การจองถูกยกเลิกแล้ว');
 }
 
-// ── FORM ──
+// ─────────────────────────────────────────────
+// FORM
 function openForm() {
-  if (!pendingRoom) return;
-  document.getElementById('formRoomLetter').textContent = pendingRoom;
-  document.getElementById('formRoomTitle').textContent  = 'กรอกข้อมูลห้อง '+pendingRoom;
-  document.getElementById('formSheetOverlay').classList.add('show');
+  document.getElementById('formRoomTitle').textContent = `ห้อง ${pendingRoom}`;
+  show('screen-form');
+  hide('screen-main');
 }
-function closeForm() { document.getElementById('formSheetOverlay').classList.remove('show'); }
-function calcNights() {
-  const ci=document.getElementById('fcheckIn').value, co=document.getElementById('fcheckOut').value;
-  const info=document.getElementById('nightsInfo');
-  if (!ci||!co){info.style.display='none';return;}
-  const n=Math.round((new Date(co)-new Date(ci))/86400000);
-  if (n>0){document.getElementById('nightsText').textContent=n+' คืน (เช็คอิน 14:00 / เช็คเอาท์ 12:00)';info.style.display='flex';}
-  else info.style.display='none';
-  document.getElementById('fcheckOut').min=ci;
+function backToMain() {
+  show('screen-main');
+  hide('screen-form');
 }
+
+function onDateChange() {
+  const ciD = document.getElementById('fciDate').value;
+  const ciT = document.getElementById('fciTime').value || '14:00';
+  const coD = document.getElementById('fcoDate').value;
+  const coT = document.getElementById('fcoTime').value || '12:00';
+
+  const row = document.getElementById('nightsRow');
+  if (!ciD || !coD) { row.style.display = 'none'; return; }
+
+  const ci = new Date(`${ciD}T${ciT}`);
+  const co = new Date(`${coD}T${coT}`);
+  const n  = Math.round((co - ci) / 86400000);
+
+  if (n > 0) {
+    document.getElementById('nightsVal').textContent  = n;
+    document.getElementById('ciDisplay').textContent  = `${ciD} ${ciT}`;
+    document.getElementById('coDisplay').textContent  = `${coD} ${coT}`;
+    row.style.display = 'flex';
+    // ตั้ง min วันออก
+    document.getElementById('fcoDate').min = ciD;
+  } else {
+    row.style.display = 'none';
+  }
+}
+
 function previewSlip(e) {
-  const f=e.target.files[0]; if (!f) return;
-  if (f.size>5*1024*1024){alert('❌ ไฟล์ใหญ่เกิน 5MB');e.target.value='';return;}
-  const r=new FileReader();
-  r.onload=ev=>{document.getElementById('slipImg').src=ev.target.result;document.getElementById('slipPreview').style.display='block';document.getElementById('slipZone').classList.add('has-file');};
+  const f = e.target.files[0];
+  if (!f) return;
+  if (f.size > 5 * 1024 * 1024) { alert('❌ ไฟล์ใหญ่เกิน 5MB'); e.target.value = ''; return; }
+  const r = new FileReader();
+  r.onload = ev => {
+    document.getElementById('slipImg').src = ev.target.result;
+    document.getElementById('slipPreview').style.display = 'block';
+    document.getElementById('slipZone').classList.add('has');
+  };
   r.readAsDataURL(f);
 }
 
-// ── SUBMIT ──
-async function submitForm() {
-  const name=document.getElementById('fname').value.trim();
-  const phone=document.getElementById('fphone').value.trim();
-  const ci=document.getElementById('fcheckIn').value;
-  const co=document.getElementById('fcheckOut').value;
-  const file=document.getElementById('fslip').files[0];
-  if (!name)                              {alert('❌ กรุณากรอกชื่อ-นามสกุล');return;}
-  if (!phone||!/^[0-9]{9,10}$/.test(phone)){alert('❌ กรุณากรอกเบอร์โทรให้ถูกต้อง');return;}
-  if (!ci)                                {alert('❌ กรุณาเลือกวันเช็คอิน');return;}
-  if (!co)                                {alert('❌ กรุณาเลือกวันเช็คเอาท์');return;}
-  if (new Date(ci)>=new Date(co))         {alert('❌ วันเช็คเอาท์ต้องหลังวันเช็คอิน');return;}
-  if (!file)                              {alert('❌ กรุณาแนบสลิปการโอนเงิน');return;}
-  if (!pendingRoom)                       {alert('❌ ไม่พบการจอง กรุณาจองใหม่');return;}
-  const btn=document.getElementById('btnSubmit');
-  btn.disabled=true;
-  document.getElementById('btnSpin').style.display='block';
-  document.getElementById('btnTxt').textContent='กำลังอัปโหลดสลิป...';
+// ─────────────────────────────────────────────
+// SUBMIT
+async function submitBooking() {
+  const name  = document.getElementById('fname').value.trim();
+  const phone = document.getElementById('fphone').value.trim();
+  const ciD   = document.getElementById('fciDate').value;
+  const ciT   = document.getElementById('fciTime').value || '14:00';
+  const coD   = document.getElementById('fcoDate').value;
+  const coT   = document.getElementById('fcoTime').value || '12:00';
+  const file  = document.getElementById('fslip').files[0];
+
+  if (!name)                               return alert('❌ กรุณากรอกชื่อ-นามสกุล');
+  if (!phone || !/^[0-9]{9,10}$/.test(phone)) return alert('❌ กรุณากรอกเบอร์โทรให้ถูกต้อง');
+  if (!ciD)                                return alert('❌ กรุณาเลือกวันเช็คอิน');
+  if (!coD)                                return alert('❌ กรุณาเลือกวันเช็คเอาท์');
+  const ci = new Date(`${ciD}T${ciT}`);
+  const co = new Date(`${coD}T${coT}`);
+  if (ci >= co)                            return alert('❌ วันเช็คเอาท์ต้องหลังวันเช็คอิน');
+  if (!file)                               return alert('❌ กรุณาแนบสลิปการโอนเงิน');
+  if (!pendingRoom)                        return alert('❌ ไม่พบการจอง กรุณาจองใหม่');
+
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true;
+  document.getElementById('btnSpin').style.display = 'block';
+  document.getElementById('btnTxt').textContent = 'กำลังอัปโหลดสลิป...';
+
   try {
-    const b64=await toBase64(file);
-    const fd=new FormData(); fd.append('image',b64);
-    const ir=await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`,{method:'POST',body:fd});
-    const id=await ir.json();
+    // อัปโหลด imgbb
+    const b64 = await toBase64(file);
+    const fd  = new FormData(); fd.append('image', b64);
+    const ir  = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: 'POST', body: fd });
+    const id  = await ir.json();
     if (!id.success) throw new Error('อัปโหลดสลิปไม่สำเร็จ');
-    document.getElementById('btnTxt').textContent='กำลังส่งข้อมูล...';
-    const res=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({type:'LIFF_BOOKING',userId,room:pendingRoom,name,phone,checkIn:ci,checkOut:co,slipUrl:id.data.url})});
-    const data=await res.json();
-    if (data.success) {
-      clearInterval(timerInterval);
-      document.getElementById('timerBar').classList.remove('active');
-      closeForm(); pendingRoom=pendingEvent=bookedAt=null;
-      await loadStatuses(); renderRooms();
-      showToast('success','🎉 จองสำเร็จ! รอแอดมินยืนยันนะคะ');
-    } else throw new Error(data.message||'เกิดข้อผิดพลาด');
+
+    document.getElementById('btnTxt').textContent = 'กำลังบันทึก...';
+
+    const d = await gasPost({
+      type: 'LIFF_BOOKING', userId,
+      room: pendingRoom, name, phone,
+      checkIn:  ci.toISOString(),
+      checkOut: co.toISOString(),
+      slipUrl: id.data.url
+    });
+
+    if (d.success) {
+      clearTimer();
+      pendingRoom = pendingEid = bookedAt = null;
+      await doRefresh();
+      backToMain();
+      toast('ok', '🎉 จองสำเร็จ! รอแอดมินยืนยันนะคะ');
+      // reset form
+      ['fname','fphone','fciDate','fciTime','fcoDate','fcoTime'].forEach(id => {
+        document.getElementById(id).value = id==='fciTime'?'14:00':id==='fcoTime'?'12:00':'';
+      });
+      document.getElementById('fslip').value = '';
+      document.getElementById('slipPreview').style.display = 'none';
+      document.getElementById('slipZone').classList.remove('has');
+      document.getElementById('nightsRow').style.display = 'none';
+    } else {
+      throw new Error(d.message || 'เกิดข้อผิดพลาด');
+    }
   } catch(e) {
-    showToast('error','❌ '+e.message);
+    toast('err', `❌ ${e.message}`);
   } finally {
-    btn.disabled=false;
-    document.getElementById('btnSpin').style.display='none';
-    document.getElementById('btnTxt').textContent='✅ ยืนยันการจอง';
+    btn.disabled = false;
+    document.getElementById('btnSpin').style.display = 'none';
+    document.getElementById('btnTxt').textContent = '✅ ยืนยันการจอง';
   }
 }
-function toBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=()=>rej(new Error('อ่านไฟล์ไม่ได้'));r.readAsDataURL(file);});}
 
-// ── TOAST ──
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload  = () => res(r.result.split(',')[1]);
+    r.onerror = () => rej(new Error('อ่านไฟล์ไม่ได้'));
+    r.readAsDataURL(file);
+  });
+}
+
+// ─────────────────────────────────────────────
+// UTILS
+function show(id) { document.getElementById(id).classList.remove('hidden'); }
+function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
 let toastT;
-function showToast(type,msg){
-  const el=document.getElementById('toast');
-  el.className='toast'+(type?' '+type:'');
-  document.getElementById('toastMsg').textContent=msg;
+function toast(type, msg) {
+  const el = document.getElementById('toast');
+  el.className = `toast ${type}`;
+  document.getElementById('toastMsg').textContent = msg;
   el.classList.add('show');
   clearTimeout(toastT);
-  toastT=setTimeout(()=>el.classList.remove('show'),3500);
+  toastT = setTimeout(() => el.classList.remove('show'), 3500);
 }
 </script>
 </body>
