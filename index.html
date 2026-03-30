@@ -61,24 +61,16 @@ body {
 
 /* ── MAIN SCREEN ── */
 #screen-main { overflow: hidden; }
-
 .topbar {
   flex-shrink: 0;
   padding: 16px 18px 0;
   display: flex; align-items: flex-start; justify-content: space-between;
 }
 .topbar-brand { display: flex; flex-direction: column; gap: 2px; }
-.brand-tag {
-  font-size: 10px; font-weight: 700; letter-spacing: 3px;
-  color: var(--gold); text-transform: uppercase;
-}
-.brand-name {
-  font-family: 'DM Serif Display', serif;
-  font-size: 22px; color: var(--text); line-height: 1;
-}
+.brand-tag { font-size: 10px; font-weight: 700; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; }
+.brand-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); line-height: 1; }
 .topbar-badge {
-  background: var(--goldfade);
-  border: 1px solid rgba(200,169,110,0.25);
+  background: var(--goldfade); border: 1px solid rgba(200,169,110,0.25);
   border-radius: 20px; padding: 5px 11px;
   font-size: 11px; font-weight: 600; color: var(--gold);
 }
@@ -87,504 +79,324 @@ body {
 .timer-strip {
   flex-shrink: 0;
   margin: 12px 18px 0;
-  background: var(--goldfade);
-  border: 1px solid rgba(200,169,110,0.25);
-  border-radius: var(--r2);
-  padding: 9px 14px;
-  display: flex; align-items: center; gap: 10px;
-  display: none;
+  background: var(--goldfade); border: 1px solid rgba(200,169,110,0.25);
+  border-radius: var(--r2); padding: 9px 14px;
+  display: none; align-items: center; gap: 10px;
 }
 .timer-strip.on { display: flex; }
-.timer-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--gold); flex-shrink: 0;
-  animation: blink 1s infinite;
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
-.timer-label { font-size: 12px; color: var(--gold); font-weight: 600; flex: 1; }
-.timer-val { font-family: 'DM Serif Display',serif; font-size: 18px; color: var(--text); }
-.timer-val.urgent { color: var(--red); animation: pulse 0.5s infinite; }
-@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.07)} }
+.timer-dot { width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:blink 1s infinite; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:.25} }
+.timer-label { font-size:12px;color:var(--gold);font-weight:600;flex:1; }
+.timer-val { font-family:'DM Serif Display',serif;font-size:18px;color:var(--text); }
+.timer-val.urgent { color:var(--red);animation:pulse .5s infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1)}50%{transform:scale(1.07)} }
 .timer-cancel {
-  background: rgba(224,85,85,0.15); border: 1px solid rgba(224,85,85,0.3);
-  color: var(--red); font-size: 11px; font-weight: 700;
-  font-family: 'Noto Sans Thai',sans-serif;
-  padding: 5px 10px; border-radius: 7px; cursor: pointer;
+  background:rgba(224,85,85,.15);border:1px solid rgba(224,85,85,.3);
+  color:var(--red);font-size:11px;font-weight:700;
+  font-family:'Noto Sans Thai',sans-serif;
+  padding:5px 10px;border-radius:7px;cursor:pointer;
 }
 
 /* Subtitle row */
 .subtitle-row {
-  flex-shrink: 0;
-  padding: 10px 18px 8px;
-  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink:0;padding:10px 18px 8px;
+  display:flex;align-items:center;justify-content:space-between;
 }
-.subtitle { font-size: 12px; color: var(--text3); font-weight: 500; }
+.subtitle { font-size:12px;color:var(--text3);font-weight:500; }
 .refresh-btn {
-  background: none; border: none; cursor: pointer;
-  color: var(--text3); font-size: 18px; padding: 2px 4px;
-  transition: color 0.2s, transform 0.3s;
+  background:none;border:none;cursor:pointer;
+  color:var(--text3);font-size:18px;padding:2px 4px;
+  transition:color .2s,transform .3s;
 }
-.refresh-btn:hover { color: var(--gold); }
-.refresh-btn.spinning { animation: spin 0.8s linear infinite; }
+.refresh-btn:hover { color:var(--gold); }
+.refresh-btn.spinning { animation:spin .8s linear infinite; }
 
 /* Rooms grid */
 .rooms-scroll {
-  flex: 1; overflow-y: auto; overflow-x: hidden;
-  padding: 0 18px 32px;
-  -webkit-overflow-scrolling: touch;
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:0 18px 32px;
+  -webkit-overflow-scrolling:touch;
 }
-.rooms-scroll::-webkit-scrollbar { display: none; }
+.rooms-scroll::-webkit-scrollbar { display:none; }
 
 .room-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  margin-bottom: 10px;
-  overflow: hidden;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-  position: relative;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);margin-bottom:10px;
+  overflow:hidden;transition:border-color .2s,box-shadow .2s;
+  cursor:pointer;position:relative;
 }
-.room-card:active { transform: scale(0.99); }
-.room-card.free { border-color: var(--border); }
-.room-card.free:hover { border-color: rgba(200,169,110,0.35); }
-.room-card.busy { opacity: 0.55; }
-.room-card.mine {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 1px var(--gold), 0 4px 24px rgba(200,169,110,0.15);
-}
+.room-card:active { transform:scale(.99); }
+.room-card.free:hover { border-color:rgba(200,169,110,.35); }
+.room-card.busy { opacity:.55; }
+.room-card.mine { border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 4px 24px rgba(200,169,110,.15); }
 
+/* Card layout: thumbnail + info */
+.card-thumb {
+  width:90px;height:90px;flex-shrink:0;
+  object-fit:cover;
+  background:var(--surface2);
+}
+.card-thumb-placeholder {
+  width:90px;height:90px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--surface2),#252535);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Serif Display',serif;font-size:28px;color:var(--gold);
+}
 .card-inner {
-  display: flex; align-items: center;
-  padding: 14px 16px; gap: 14px;
+  display:flex;align-items:stretch;
 }
-.card-letter {
-  width: 46px; height: 46px; flex-shrink: 0;
-  background: linear-gradient(135deg, var(--surface2), #252535);
-  border: 1px solid var(--border2);
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'DM Serif Display',serif; font-size: 22px; color: var(--gold);
+.card-body {
+  flex:1;min-width:0;
+  padding:12px 14px;
+  display:flex;align-items:center;gap:12px;
 }
-.card-info { flex: 1; min-width: 0; }
-.card-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
-.card-desc { font-size: 11px; color: var(--text3); white-space: nowrap; overflow:hidden; text-overflow:ellipsis; }
-.card-tags { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+.card-info { flex:1;min-width:0; }
+.card-name { font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px; }
+.card-desc { font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.card-tags { display:flex;gap:5px;margin-top:5px;flex-wrap:wrap; }
 .ctag {
-  font-size: 10px; font-weight: 600; color: var(--text3);
-  background: var(--surface2); border: 1px solid var(--border);
-  padding: 2px 7px; border-radius: 5px;
+  font-size:10px;font-weight:600;color:var(--text3);
+  background:var(--surface2);border:1px solid var(--border);
+  padding:2px 7px;border-radius:5px;
 }
-.card-right { flex-shrink: 0; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.card-right { flex-shrink:0;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px; }
 .status-pill {
-  font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px;
-  display: flex; align-items: center; gap: 4px;
-  white-space: nowrap;
+  font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;
+  display:flex;align-items:center;gap:4px;white-space:nowrap;
 }
-.pill-free  { background: var(--greenfade); color: var(--green); }
-.pill-busy  { background: var(--redfade);   color: var(--red); }
-.pill-mine  { background: var(--goldfade);  color: var(--gold); }
-.s-dot { width:5px; height:5px; border-radius:50%; background:currentColor; }
+.pill-free  { background:var(--greenfade);color:var(--green); }
+.pill-busy  { background:var(--redfade);color:var(--red); }
+.pill-mine  { background:var(--goldfade);color:var(--gold); }
+.s-dot { width:5px;height:5px;border-radius:50%;background:currentColor; }
 
 .book-btn {
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  color: #1C1C2E; font-size: 11px; font-weight: 800;
-  font-family: 'Noto Sans Thai',sans-serif;
-  border: none; border-radius: 8px; padding: 7px 13px; cursor: pointer;
-  white-space: nowrap;
-  transition: transform 0.15s, box-shadow 0.15s;
-  box-shadow: 0 2px 10px rgba(200,169,110,0.25);
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:#1C1C2E;font-size:11px;font-weight:800;
+  font-family:'Noto Sans Thai',sans-serif;
+  border:none;border-radius:8px;padding:7px 13px;cursor:pointer;
+  white-space:nowrap;transition:transform .15s,box-shadow .15s;
+  box-shadow:0 2px 10px rgba(200,169,110,.25);
 }
-.book-btn:active { transform: scale(0.96); }
+.book-btn:active { transform:scale(.96); }
 .book-btn.fill-btn {
-  background: linear-gradient(135deg, #3DBF8A, #50D4A0);
-  box-shadow: 0 2px 10px rgba(61,191,138,0.2);
+  background:linear-gradient(135deg,#3DBF8A,#50D4A0);
+  box-shadow:0 2px 10px rgba(61,191,138,.2);
 }
-.book-btn:disabled {
-  background: var(--surface2); color: var(--text3);
-  box-shadow: none; cursor: default;
+.book-btn:disabled { background:var(--surface2);color:var(--text3);box-shadow:none;cursor:default; }
+
+/* ── CONFIRM BOTTOM SHEET ── */
+#confirmSheet {
+  position:fixed;inset:0;z-index:200;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  background:rgba(0,0,0,0);
+  pointer-events:none;
+  transition:background .3s;
+}
+#confirmSheet.open {
+  background:rgba(0,0,0,.6);
+  pointer-events:all;
+}
+.confirm-panel {
+  background:var(--surface);
+  border-radius:20px 20px 0 0;
+  border-top:1px solid var(--border2);
+  padding:20px 18px 36px;
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+}
+#confirmSheet.open .confirm-panel { transform:translateY(0); }
+.confirm-handle {
+  width:36px;height:4px;border-radius:2px;
+  background:var(--border2);margin:0 auto 18px;
+}
+.confirm-room-badge {
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface2);border:1px solid var(--border2);
+  border-radius:12px;padding:12px 14px;margin-bottom:16px;
+}
+.confirm-room-letter {
+  width:42px;height:42px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--goldfade),rgba(200,169,110,.2));
+  border:1px solid rgba(200,169,110,.3);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Serif Display',serif;font-size:22px;color:var(--gold);
+}
+.confirm-room-info { flex:1; }
+.confirm-room-name { font-size:15px;font-weight:700;color:var(--text); }
+.confirm-room-sub  { font-size:11px;color:var(--text2);margin-top:2px; }
+.confirm-warn {
+  background:rgba(200,169,110,.08);border:1px solid rgba(200,169,110,.2);
+  border-radius:10px;padding:10px 13px;margin-bottom:18px;
+  font-size:12px;color:var(--text2);line-height:1.6;
+}
+.confirm-warn strong { color:var(--gold); }
+.confirm-btns { display:flex;gap:8px; }
+.confirm-btn {
+  flex:1;padding:14px;border:none;border-radius:11px;
+  font-size:14px;font-weight:800;font-family:'Noto Sans Thai',sans-serif;
+  cursor:pointer;transition:transform .15s;
+}
+.confirm-btn:active { transform:scale(.97); }
+.confirm-btn-yes {
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:#1C1C2E;box-shadow:0 4px 16px rgba(200,169,110,.3);
+}
+.confirm-btn-no {
+  background:var(--surface2);border:1px solid var(--border2);color:var(--text2);
 }
 
 /* ── GALLERY SCREEN ── */
-#screen-gallery {
-  background: var(--bg);
-  z-index: 100;
-}
-
+#screen-gallery { background:var(--bg);z-index:100; }
 .gallery-header {
-  flex-shrink: 0;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 18px;
-  display: flex; align-items: center; gap: 12px;
+  flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border);
+  padding:14px 18px;display:flex;align-items:center;gap:12px;
 }
 .gallery-back {
-  background: var(--surface2); border: 1px solid var(--border2);
-  color: var(--text2); width: 34px; height: 34px; border-radius: 10px;
-  font-size: 16px; cursor: pointer; display: flex;
-  align-items: center; justify-content: center;
-  transition: background 0.2s;
+  background:var(--surface2);border:1px solid var(--border2);
+  color:var(--text2);width:34px;height:34px;border-radius:10px;
+  font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
 }
-.gallery-back:hover { background: rgba(200,169,110,0.2); color: var(--gold); }
-.gallery-header-info { flex: 1; }
-.gallery-room-name {
-  font-family: 'DM Serif Display',serif;
-  font-size: 20px; color: var(--gold); line-height: 1;
-}
-.gallery-room-desc { font-size: 11px; color: var(--text3); margin-top: 2px; }
-
-.gallery-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.gallery-slider-wrap {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  background: var(--surface);
-}
-
-.gallery-slider {
-  display: flex;
-  height: 100%;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  touch-action: pan-y;
-}
-
-.gallery-slide {
-  min-width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.gallery-slide img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  border-radius: var(--r);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-}
-
+.gallery-back:hover { background:rgba(200,169,110,.2);color:var(--gold); }
+.gallery-header-info { flex:1; }
+.gallery-room-name { font-family:'DM Serif Display',serif;font-size:20px;color:var(--gold);line-height:1; }
+.gallery-room-desc { font-size:11px;color:var(--text3);margin-top:2px; }
+.gallery-body { flex:1;display:flex;flex-direction:column;overflow:hidden; }
+.gallery-slider-wrap { flex:1;position:relative;overflow:hidden;background:var(--surface); }
+.gallery-slider { display:flex;height:100%;transition:transform .3s cubic-bezier(.4,0,.2,1);touch-action:pan-y; }
+.gallery-slide { min-width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:20px; }
+.gallery-slide img { max-width:100%;max-height:100%;object-fit:contain;border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.4); }
 .gallery-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(22,22,31,0.8);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border2);
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  color: var(--text);
-  cursor: pointer;
-  transition: all 0.2s;
-  z-index: 10;
+  position:absolute;top:50%;transform:translateY(-50%);
+  background:rgba(22,22,31,.8);backdrop-filter:blur(10px);
+  border:1px solid var(--border2);width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:var(--text);cursor:pointer;transition:all .2s;z-index:10;
 }
-.gallery-nav:hover {
-  background: rgba(200,169,110,0.2);
-  border-color: var(--gold);
-  color: var(--gold);
-}
-.gallery-nav:active { transform: translateY(-50%) scale(0.95); }
-.gallery-nav.prev { left: 16px; }
-.gallery-nav.next { right: 16px; }
-.gallery-nav:disabled {
-  opacity: 0.3;
-  cursor: default;
-  pointer-events: none;
-}
-
-.gallery-dots {
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: var(--surface);
-}
-
-.gallery-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  transition: all 0.3s;
-  cursor: pointer;
-}
-.gallery-dot.active {
-  width: 24px;
-  border-radius: 4px;
-  background: var(--gold);
-  border-color: var(--gold);
-}
-
-.gallery-info {
-  flex-shrink: 0;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  padding: 16px 18px;
-}
-
-.gallery-room-full-name {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-
-.gallery-room-full-desc {
-  font-size: 12px;
-  color: var(--text2);
-  margin-bottom: 12px;
-}
-
-.gallery-tags {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.gallery-tag {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text3);
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  padding: 4px 10px;
-  border-radius: 6px;
-}
-
-.gallery-actions {
-  display: flex;
-  gap: 8px;
-}
-
+.gallery-nav:hover { background:rgba(200,169,110,.2);border-color:var(--gold);color:var(--gold); }
+.gallery-nav:active { transform:translateY(-50%) scale(.95); }
+.gallery-nav.prev { left:16px; }
+.gallery-nav.next { right:16px; }
+.gallery-nav:disabled { opacity:.3;cursor:default;pointer-events:none; }
+.gallery-dots { padding:16px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--surface); }
+.gallery-dot { width:8px;height:8px;border-radius:50%;background:var(--surface2);border:1px solid var(--border2);transition:all .3s;cursor:pointer; }
+.gallery-dot.active { width:24px;border-radius:4px;background:var(--gold);border-color:var(--gold); }
+.gallery-info { flex-shrink:0;background:var(--surface);border-top:1px solid var(--border);padding:16px 18px; }
+.gallery-room-full-name { font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px; }
+.gallery-room-full-desc { font-size:12px;color:var(--text2);margin-bottom:12px; }
+.gallery-tags { display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px; }
+.gallery-tag { font-size:11px;font-weight:600;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:4px 10px;border-radius:6px; }
+.gallery-actions { display:flex;gap:8px; }
 .gallery-btn {
-  flex: 1;
-  padding: 13px;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  font-family: 'Noto Sans Thai',sans-serif;
-  cursor: pointer;
-  transition: transform 0.15s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+  flex:1;padding:13px;border:none;border-radius:10px;
+  font-size:14px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;
+  cursor:pointer;transition:transform .15s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
 }
-.gallery-btn:active { transform: scale(0.98); }
-
-.gallery-btn-book {
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  color: #1C1C2E;
-  box-shadow: 0 4px 16px rgba(200,169,110,0.3);
-}
-
-.gallery-btn-fill {
-  background: linear-gradient(135deg, var(--green), #50D4A0);
-  color: #0E1C16;
-  box-shadow: 0 4px 16px rgba(61,191,138,0.25);
-}
-
-.gallery-btn:disabled {
-  background: var(--surface2);
-  color: var(--text3);
-  box-shadow: none;
-  cursor: default;
-}
+.gallery-btn:active { transform:scale(.98); }
+.gallery-btn-book { background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1C1C2E;box-shadow:0 4px 16px rgba(200,169,110,.3); }
+.gallery-btn-fill { background:linear-gradient(135deg,var(--green),#50D4A0);color:#0E1C16;box-shadow:0 4px 16px rgba(61,191,138,.25); }
+.gallery-btn:disabled { background:var(--surface2);color:var(--text3);box-shadow:none;cursor:default; }
 
 /* ── FORM SCREEN ── */
-#screen-form {
-  background: var(--bg);
-  transform: translateY(0);
-}
+#screen-form { background:var(--bg); }
 .form-topbar {
-  flex-shrink: 0;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 18px;
-  display: flex; align-items: center; gap: 12px;
+  flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border);
+  padding:14px 18px;display:flex;align-items:center;gap:12px;
 }
 .form-back {
-  background: var(--surface2); border: 1px solid var(--border2);
-  color: var(--text2); width: 34px; height: 34px; border-radius: 10px;
-  font-size: 16px; cursor: pointer; display: flex;
-  align-items: center; justify-content: center;
-  transition: background 0.2s;
+  background:var(--surface2);border:1px solid var(--border2);
+  color:var(--text2);width:34px;height:34px;border-radius:10px;
+  font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
 }
-.form-back:hover { background: rgba(224,85,85,0.2); color: var(--red); }
-.form-topbar-info { flex: 1; }
-.form-topbar-room {
-  font-family: 'DM Serif Display',serif;
-  font-size: 20px; color: var(--gold); line-height: 1;
-}
-.form-topbar-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.form-timer {
-  text-align: right;
-}
-.form-timer-val {
-  font-family: 'DM Serif Display',serif; font-size: 18px; color: var(--text);
-  display: block;
-}
-.form-timer-val.urgent { color: var(--red); }
-.form-timer-lbl { font-size: 10px; color: var(--text3); }
-
-.form-scroll {
-  flex: 1; overflow-y: auto;
-  padding: 16px 18px 100px;
-  -webkit-overflow-scrolling: touch;
-}
-.form-scroll::-webkit-scrollbar { display: none; }
-
-.fblock {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 16px 14px;
-  margin-bottom: 10px;
-}
-.fblock-title {
-  font-size: 10px; font-weight: 700; color: var(--text3);
-  letter-spacing: 2px; text-transform: uppercase;
-  margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
-}
-.field { margin-bottom: 12px; }
-.field:last-child { margin-bottom: 0; }
-.field label {
-  display: block; font-size: 11px; font-weight: 600;
-  color: var(--text2); margin-bottom: 6px;
-}
-.req { color: var(--red); }
-
-/* Inputs */
+.form-back:hover { background:rgba(224,85,85,.2);color:var(--red); }
+.form-topbar-info { flex:1; }
+.form-topbar-room { font-family:'DM Serif Display',serif;font-size:20px;color:var(--gold);line-height:1; }
+.form-topbar-sub { font-size:11px;color:var(--text3);margin-top:2px; }
+.form-timer { text-align:right; }
+.form-timer-val { font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);display:block; }
+.form-timer-val.urgent { color:var(--red); }
+.form-timer-lbl { font-size:10px;color:var(--text3); }
+.form-scroll { flex:1;overflow-y:auto;padding:16px 18px 100px;-webkit-overflow-scrolling:touch; }
+.form-scroll::-webkit-scrollbar { display:none; }
+.fblock { background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 14px;margin-bottom:10px; }
+.fblock-title { font-size:10px;font-weight:700;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:6px; }
+.field { margin-bottom:12px; }
+.field:last-child { margin-bottom:0; }
+.field label { display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px; }
+.req { color:var(--red); }
 input[type=text], input[type=tel] {
-  width: 100%;
-  background: var(--surface2);
-  border: 1.5px solid var(--border2);
-  border-radius: var(--r2);
-  padding: 11px 13px;
-  font-size: 14px;
-  font-family: 'Noto Sans Thai',sans-serif;
-  color: var(--text);
-  -webkit-appearance: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  width:100%;background:var(--surface2);border:1.5px solid var(--border2);
+  border-radius:var(--r2);padding:11px 13px;font-size:14px;
+  font-family:'Noto Sans Thai',sans-serif;color:var(--text);
+  -webkit-appearance:none;transition:border-color .2s,box-shadow .2s;
 }
-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,169,110,0.1); }
-
-/* Date-time grid */
-.dt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.dt-field label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 5px; }
-
-/* Custom date/time selector */
-.dt-input-wrap { position: relative; }
+input:focus { outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,169,110,.1); }
+.dt-grid { display:grid;grid-template-columns:1fr 1fr;gap:8px; }
+.dt-field label { display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px; }
 .dt-input-wrap input[type=date],
 .dt-input-wrap input[type=time] {
-  width: 100%;
-  background: var(--surface2);
-  border: 1.5px solid var(--border2);
-  border-radius: var(--r2);
-  padding: 10px 12px;
-  font-size: 13px;
-  font-family: 'Noto Sans Thai',sans-serif;
-  color: var(--text);
-  -webkit-appearance: none;
-  color-scheme: dark;
-  transition: border-color 0.2s;
+  width:100%;background:var(--surface2);border:1.5px solid var(--border2);
+  border-radius:var(--r2);padding:10px 12px;font-size:13px;
+  font-family:'Noto Sans Thai',sans-serif;color:var(--text);
+  -webkit-appearance:none;color-scheme:dark;transition:border-color .2s;
 }
-.dt-input-wrap input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,169,110,0.1); }
-
+.dt-input-wrap input:focus { outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,169,110,.1); }
 .nights-row {
-  display: flex; align-items: center; gap: 7px;
-  background: var(--surface2); border-radius: var(--r2);
-  padding: 8px 12px; margin-top: 8px;
-  font-size: 12px; color: var(--text2); font-weight: 500;
+  display:flex;align-items:center;gap:7px;
+  background:var(--surface2);border-radius:var(--r2);
+  padding:8px 12px;margin-top:8px;
+  font-size:12px;color:var(--text2);font-weight:500;
 }
-.nights-val { color: var(--gold); font-weight: 700; }
-
-/* Slip upload */
+.nights-val { color:var(--gold);font-weight:700; }
 .slip-zone {
-  border: 1.5px dashed var(--border2);
-  border-radius: var(--r2); padding: 20px;
-  text-align: center; cursor: pointer;
-  background: var(--surface2);
-  transition: border-color 0.2s, background 0.2s;
-  position: relative;
+  border:1.5px dashed var(--border2);border-radius:var(--r2);padding:20px;
+  text-align:center;cursor:pointer;background:var(--surface2);
+  transition:border-color .2s,background .2s;position:relative;
 }
-.slip-zone:hover { border-color: var(--gold); }
-.slip-zone.has { border-color: var(--green); border-style: solid; background: var(--greenfade); }
-.slip-zone input[type=file] {
-  position: absolute; inset: 0; opacity: 0;
-  cursor: pointer; width: 100%; height: 100%;
-}
-.slip-ico { font-size: 26px; margin-bottom: 5px; }
-.slip-txt { font-size: 12px; color: var(--text3); font-weight: 500; }
-.slip-ok { font-size: 12px; color: var(--green); font-weight: 600; margin-top: 6px; }
-.slip-preview { display: none; margin-top: 10px; }
-.slip-preview img {
-  width: 100%; max-height: 160px; object-fit: contain;
-  border-radius: 8px; border: 1px solid var(--border2);
-}
-
-/* Submit btn */
+.slip-zone:hover { border-color:var(--gold); }
+.slip-zone.has { border-color:var(--green);border-style:solid;background:var(--greenfade); }
+.slip-zone input[type=file] { position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%; }
+.slip-ico { font-size:26px;margin-bottom:5px; }
+.slip-txt { font-size:12px;color:var(--text3);font-weight:500; }
+.slip-ok { font-size:12px;color:var(--green);font-weight:600;margin-top:6px; }
+.slip-preview { display:none;margin-top:10px; }
+.slip-preview img { width:100%;max-height:160px;object-fit:contain;border-radius:8px;border:1px solid var(--border2); }
 .btn-submit-wrap {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  padding: 12px 18px 24px;
-  background: linear-gradient(to top, var(--bg) 70%, transparent);
+  position:fixed;bottom:0;left:0;right:0;
+  padding:12px 18px 24px;
+  background:linear-gradient(to top,var(--bg) 70%,transparent);
 }
 .btn-submit {
-  width: 100%; padding: 15px;
-  background: linear-gradient(135deg, var(--green), #50D4A0);
-  color: #0E1C16; border: none; border-radius: 12px;
-  font-size: 15px; font-weight: 800;
-  font-family: 'Noto Sans Thai',sans-serif;
-  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-  box-shadow: 0 4px 24px rgba(61,191,138,0.25);
-  transition: transform 0.15s;
+  width:100%;padding:15px;
+  background:linear-gradient(135deg,var(--green),#50D4A0);
+  color:#0E1C16;border:none;border-radius:12px;
+  font-size:15px;font-weight:800;font-family:'Noto Sans Thai',sans-serif;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 24px rgba(61,191,138,.25);transition:transform .15s;
 }
-.btn-submit:active { transform: scale(0.98); }
-.btn-submit:disabled { background: var(--surface2); color: var(--text3); box-shadow: none; cursor: default; }
-.btn-spin {
-  width: 16px; height: 16px;
-  border: 2.5px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  display: none;
-}
+.btn-submit:active { transform:scale(.98); }
+.btn-submit:disabled { background:var(--surface2);color:var(--text3);box-shadow:none;cursor:default; }
+.btn-spin { width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:none; }
 
 /* Toast */
 .toast {
-  position: fixed; bottom: 32px; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  color: var(--text); padding: 12px 18px; border-radius: 12px;
-  font-size: 13px; font-weight: 600;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-  display: flex; align-items: center; gap: 10px;
-  opacity: 0; transition: all 0.3s; z-index: 999;
-  pointer-events: none; max-width: calc(100vw - 36px);
-  white-space: nowrap;
+  position:fixed;bottom:32px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--surface);border:1px solid var(--border2);
+  color:var(--text);padding:12px 18px;border-radius:12px;
+  font-size:13px;font-weight:600;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  display:flex;align-items:center;gap:10px;
+  opacity:0;transition:all .3s;z-index:999;
+  pointer-events:none;max-width:calc(100vw - 36px);white-space:nowrap;
 }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.toast-bar { width: 3px; height: 28px; border-radius: 2px; flex-shrink: 0; }
-.toast.ok .toast-bar   { background: var(--green); }
-.toast.err .toast-bar  { background: var(--red); }
-.toast.info .toast-bar { background: var(--gold); }
+.toast.show { opacity:1;transform:translateX(-50%) translateY(0); }
+.toast-bar { width:3px;height:28px;border-radius:2px;flex-shrink:0; }
+.toast.ok  .toast-bar { background:var(--green); }
+.toast.err .toast-bar { background:var(--red); }
+.toast.info .toast-bar { background:var(--gold); }
 </style>
 </head>
 <body>
@@ -604,19 +416,16 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rg
     </div>
     <span class="topbar-badge" id="roomCountBadge">13 ห้อง</span>
   </div>
-
   <div class="timer-strip" id="timerStrip">
     <div class="timer-dot"></div>
     <span class="timer-label" id="timerRoomLbl">ห้อง A — กำลังจอง</span>
     <span class="timer-val" id="timerVal">30:00</span>
     <button class="timer-cancel" onclick="doCancelPending()">ยกเลิก</button>
   </div>
-
   <div class="subtitle-row">
     <span class="subtitle" id="subTitle">เลือกห้องพักที่ต้องการ</span>
     <button class="refresh-btn" id="refreshBtn" onclick="doRefresh()" title="รีเฟรช">↻</button>
   </div>
-
   <div class="rooms-scroll" id="roomsScroll"></div>
 </div>
 
@@ -629,19 +438,16 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rg
       <div class="gallery-room-desc" id="galleryRoomDesc">แตะเพื่อดูรูปภาพ</div>
     </div>
   </div>
-
   <div class="gallery-body">
     <div class="gallery-slider-wrap">
       <button class="gallery-nav prev" id="galleryPrev" onclick="slideGallery(-1)">‹</button>
       <button class="gallery-nav next" id="galleryNext" onclick="slideGallery(1)">›</button>
       <div class="gallery-slider" id="gallerySlider"></div>
     </div>
-
     <div class="gallery-dots" id="galleryDots"></div>
-
     <div class="gallery-info">
-      <div class="gallery-room-full-name" id="galleryFullName">Deluxe Room A</div>
-      <div class="gallery-room-full-desc" id="galleryFullDesc">วิวสวน · ระเบียงส่วนตัว</div>
+      <div class="gallery-room-full-name" id="galleryFullName"></div>
+      <div class="gallery-room-full-desc" id="galleryFullDesc"></div>
       <div class="gallery-tags" id="galleryTags"></div>
       <div class="gallery-actions" id="galleryActions"></div>
     </div>
@@ -661,9 +467,7 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rg
       <span class="form-timer-lbl">เหลือเวลา</span>
     </div>
   </div>
-
   <div class="form-scroll">
-    <!-- ผู้จอง -->
     <div class="fblock">
       <div class="fblock-title">👤 ข้อมูลผู้จอง</div>
       <div class="field">
@@ -675,34 +479,24 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rg
         <input type="tel" id="fphone" placeholder="0812345678">
       </div>
     </div>
-
-    <!-- วันที่ + เวลา -->
     <div class="fblock">
       <div class="fblock-title">📅 วันที่และเวลา</div>
       <div class="dt-grid">
         <div class="dt-field">
           <label>เช็คอิน <span class="req">*</span></label>
-          <div class="dt-input-wrap">
-            <input type="date" id="fciDate" onchange="onDateChange()">
-          </div>
+          <div class="dt-input-wrap"><input type="date" id="fciDate" onchange="onDateChange()"></div>
         </div>
         <div class="dt-field">
           <label>เวลาเช็คอิน <span class="req">*</span></label>
-          <div class="dt-input-wrap">
-            <input type="time" id="fciTime" value="14:00" onchange="onDateChange()">
-          </div>
+          <div class="dt-input-wrap"><input type="time" id="fciTime" value="14:00" onchange="onDateChange()"></div>
         </div>
         <div class="dt-field">
           <label>เช็คเอาท์ <span class="req">*</span></label>
-          <div class="dt-input-wrap">
-            <input type="date" id="fcoDate" onchange="onDateChange()">
-          </div>
+          <div class="dt-input-wrap"><input type="date" id="fcoDate" onchange="onDateChange()"></div>
         </div>
         <div class="dt-field">
           <label>เวลาเช็คเอาท์ <span class="req">*</span></label>
-          <div class="dt-input-wrap">
-            <input type="time" id="fcoTime" value="12:00" onchange="onDateChange()">
-          </div>
+          <div class="dt-input-wrap"><input type="time" id="fcoTime" value="12:00" onchange="onDateChange()"></div>
         </div>
       </div>
       <div id="nightsRow" class="nights-row" style="display:none">
@@ -710,8 +504,6 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rg
         &nbsp;·&nbsp; เช็คอิน <span id="ciDisplay">-</span> &nbsp;→&nbsp; เช็คเอาท์ <span id="coDisplay">-</span>
       </div>
     </div>
-
-    <!-- สลิป -->
     <div class="fblock">
       <div class="fblock-title">💳 สลิปโอนเงิน</div>
       <div class="slip-zone" id="slipZone">
@@ -726,12 +518,33 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rg
       </div>
     </div>
   </div>
-
   <div class="btn-submit-wrap">
     <button class="btn-submit" id="btnSubmit" onclick="submitBooking()">
       <div class="btn-spin" id="btnSpin"></div>
       <span id="btnTxt">✅ ยืนยันการจอง</span>
     </button>
+  </div>
+</div>
+
+<!-- CONFIRM BOTTOM SHEET -->
+<div id="confirmSheet" onclick="onSheetBgClick(event)">
+  <div class="confirm-panel">
+    <div class="confirm-handle"></div>
+    <div class="confirm-room-badge">
+      <div class="confirm-room-letter" id="confirmLetter">A</div>
+      <div class="confirm-room-info">
+        <div class="confirm-room-name" id="confirmRoomName">Deluxe Room A</div>
+        <div class="confirm-room-sub" id="confirmRoomSub">วิวสวน · ระเบียงส่วนตัว</div>
+      </div>
+    </div>
+    <div class="confirm-warn">
+      ⏱️ หลังยืนยัน ห้องจะถูกล็อคไว้ให้คุณ <strong>30 นาที</strong><br>
+      กรุณากรอกข้อมูลและแนบสลิปให้ครบภายในเวลาที่กำหนด
+    </div>
+    <div class="confirm-btns">
+      <button class="confirm-btn confirm-btn-no" onclick="closeConfirmSheet()">ยกเลิก</button>
+      <button class="confirm-btn confirm-btn-yes" id="confirmYesBtn" onclick="doConfirmBook()">✨ จองเลย!</button>
+    </div>
   </div>
 </div>
 
@@ -743,92 +556,26 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rg
 
 <script>
 // ─────────────────────────────────────────────
-const GAS_URL      = 'https://script.google.com/macros/s/AKfycbxOFHE4cSzJe9AtGPN9yWis9ohNCOoAo2uHUxapoKevxY8eeUQzcZNmFb7TUZVYtL_tQg/exec';
+const GAS_URL      = 'https://script.google.com/macros/s/AKfycbyt1aH6a-UXCAQw7wyrFkfLGKM0rhFT0mg7D8iqX87D46fW1lpZwkC2p5KLKTiNrykAfQ/exec';
 const LIFF_ID      = '2009597872-3RfPCP2A';
 const IMGBB_KEY    = 'f02c86abd0edb6ce9d8e8f60bbf124af';
 const ROOMS        = ['A','B','C','D','E','F','G','H','I','J','K','L','M'];
 const DEADLINE_MIN = 30;
 
-// รูปภาพของแต่ละห้อง (ใส่ URL รูปจริงได้เลย)
 const ROOM_IMAGES = {
-  A: [
-    'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800',
-    'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800',
-    'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800',
-    'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800'
-  ],
-  B: [
-    'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=800',
-    'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800',
-    'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=800',
-    'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800'
-  ],
-  C: [
-    'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800',
-    'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800',
-    'https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800',
-    'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800'
-  ],
-  D: [
-    'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800',
-    'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=800',
-    'https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?w=800',
-    'https://images.unsplash.com/photo-1615873968403-89e068629265?w=800'
-  ],
-  E: [
-    'https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=800',
-    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800',
-    'https://images.unsplash.com/photo-1616047006789-b7af5afb8c20?w=800',
-    'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?w=800'
-  ],
-  F: [
-    'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800',
-    'https://images.unsplash.com/photo-1631049552240-59c37f38802b?w=800',
-    'https://images.unsplash.com/photo-1566195992011-5f6b21e539aa?w=800',
-    'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800'
-  ],
-  G: [
-    'https://images.unsplash.com/photo-1598928636135-d146006ff4be?w=800',
-    'https://images.unsplash.com/photo-1631049035182-249067d7618e?w=800',
-    'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800',
-    'https://images.unsplash.com/photo-1596701062351-8c2c14d1fdd0?w=800'
-  ],
-  H: [
-    'https://images.unsplash.com/photo-1582719189341-f53ba51c2795?w=800',
-    'https://images.unsplash.com/photo-1631049421450-348ccd7f8949?w=800',
-    'https://images.unsplash.com/photo-1591088398444-1ab87b4d4eaf?w=800',
-    'https://images.unsplash.com/photo-1553444836-bc6c8d340ba7?w=800'
-  ],
-  I: [
-    'https://images.unsplash.com/photo-1595526051245-c57e98ac3fdc?w=800',
-    'https://images.unsplash.com/photo-1631049307329-5a8fde88e5b0?w=800',
-    'https://images.unsplash.com/photo-1590490360836-48bac2f48eb5?w=800',
-    'https://images.unsplash.com/photo-1578898887155-72ddc3b97cd4?w=800'
-  ],
-  J: [
-    'https://images.unsplash.com/photo-1616047267365-4370ba8a6eac?w=800',
-    'https://images.unsplash.com/photo-1631049307390-4e5f0ff38fb3?w=800',
-    'https://images.unsplash.com/photo-1571624436279-b272aff752b5?w=800',
-    'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800'
-  ],
-  K: [
-    'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800',
-    'https://images.unsplash.com/photo-1631049035326-ca7c83734e48?w=800',
-    'https://images.unsplash.com/photo-1590490359683-658d3d23f972?w=800',
-    'https://images.unsplash.com/photo-1596701062351-8c2c14d1fdd0?w=800'
-  ],
-  L: [
-    'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800',
-    'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800',
-    'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=800',
-    'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800'
-  ],
-  M: [
-    'https://images.unsplash.com/photo-1631049552057-403cdb8f0658?w=800',
-    'https://images.unsplash.com/photo-1631049035242-61b0b0c52217?w=800',
-    'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800',
-    'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800'
-  ]
+  A: ['https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800','https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800','https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800','https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800'],
+  B: ['https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=800','https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800','https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=800','https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800'],
+  C: ['https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800','https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800','https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800','https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800'],
+  D: ['https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800','https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=800','https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?w=800','https://images.unsplash.com/photo-1615873968403-89e068629265?w=800'],
+  E: ['https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=800','https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800','https://images.unsplash.com/photo-1616047006789-b7af5afb8c20?w=800','https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?w=800'],
+  F: ['https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800','https://images.unsplash.com/photo-1631049552240-59c37f38802b?w=800','https://images.unsplash.com/photo-1566195992011-5f6b21e539aa?w=800','https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800'],
+  G: ['https://images.unsplash.com/photo-1598928636135-d146006ff4be?w=800','https://images.unsplash.com/photo-1631049035182-249067d7618e?w=800','https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800','https://images.unsplash.com/photo-1596701062351-8c2c14d1fdd0?w=800'],
+  H: ['https://images.unsplash.com/photo-1582719189341-f53ba51c2795?w=800','https://images.unsplash.com/photo-1631049421450-348ccd7f8949?w=800','https://images.unsplash.com/photo-1591088398444-1ab87b4d4eaf?w=800','https://images.unsplash.com/photo-1553444836-bc6c8d340ba7?w=800'],
+  I: ['https://images.unsplash.com/photo-1595526051245-c57e98ac3fdc?w=800','https://images.unsplash.com/photo-1631049307329-5a8fde88e5b0?w=800','https://images.unsplash.com/photo-1590490360836-48bac2f48eb5?w=800','https://images.unsplash.com/photo-1578898887155-72ddc3b97cd4?w=800'],
+  J: ['https://images.unsplash.com/photo-1616047267365-4370ba8a6eac?w=800','https://images.unsplash.com/photo-1631049307390-4e5f0ff38fb3?w=800','https://images.unsplash.com/photo-1571624436279-b272aff752b5?w=800','https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800'],
+  K: ['https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800','https://images.unsplash.com/photo-1631049035326-ca7c83734e48?w=800','https://images.unsplash.com/photo-1590490359683-658d3d23f972?w=800','https://images.unsplash.com/photo-1596701062351-8c2c14d1fdd0?w=800'],
+  L: ['https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800','https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800','https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=800','https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800'],
+  M: ['https://images.unsplash.com/photo-1631049552057-403cdb8f0658?w=800','https://images.unsplash.com/photo-1631049035242-61b0b0c52217?w=800','https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800','https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800']
 };
 
 const ROOM_INFO = {
@@ -836,31 +583,30 @@ const ROOM_INFO = {
   B:{name:'Superior Room B',desc:'เหมาะครอบครัว · พื้นที่กว้าง',  tags:['WiFi','แอร์','น้ำอุ่น','ระเบียง']},
   C:{name:'Standard Room C',desc:'สะอาด · สะดวกสบาย',             tags:['WiFi','แอร์','น้ำอุ่น']},
   D:{name:'Cozy Room D',    desc:'เตียงคิงไซส์ · บรรยากาศอบอุ่น', tags:['WiFi','แอร์','คิงไซส์']},
-  E:{name:'Room E', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
-  F:{name:'Room F', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
-  G:{name:'Room G', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
-  H:{name:'Room H', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
-  I:{name:'Room I', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
-  J:{name:'Room J', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
-  K:{name:'Room K', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
-  L:{name:'Room L', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
-  M:{name:'Room M', desc:'ห้องพักมาตรฐาน', tags:['WiFi','แอร์']},
+  E:{name:'Room E',desc:'ห้องพักมาตรฐาน',tags:['WiFi','แอร์']},
+  F:{name:'Room F',desc:'ห้องพักมาตรฐาน',tags:['WiFi','แอร์']},
+  G:{name:'Room G',desc:'ห้องพักมาตรฐาน',tags:['WiFi','แอร์']},
+  H:{name:'Room H',desc:'ห้องพักมาตรฐาน',tags:['WiFi','แอร์']},
+  I:{name:'Room I',desc:'ห้องพักมาตรฐาน',tags:['WiFi','แอร์']},
+  J:{name:'Room J',desc:'ห้องพักมาตรฐาน',tags:['WiFi','แอร์']},
+  K:{name:'Room K',desc:'ห้องพักมาตรฐาน',tags:['WiFi','แอร์']},
+  L:{name:'Room L',desc:'ห้องพักมาตรฐาน',tags:['WiFi','แอร์']},
+  M:{name:'Room M',desc:'ห้องพักมาตรฐาน',tags:['WiFi','แอร์']},
 };
 
 // State
-let userId      = null;
-let roomStates  = {};
-let pendingRoom = null;
-let pendingEid  = null;
-let bookedAt    = null;
-let timerIv     = null;
+let userId           = null;
+let roomStates       = {};
+let pendingRoom      = null;
+let pendingEid       = null;
+let bookedAt         = null;
+let timerIv          = null;
 let currentGalleryRoom = null;
-let currentSlide = 0;
-let touchStartX = 0;
-let touchEndX = 0;
+let currentSlide     = 0;
+let touchStartX      = 0;
+let pendingConfirmRoom = null; // ห้องที่รอ confirm sheet
 
 // ─────────────────────────────────────────────
-// GAS fetch helper
 async function gasPost(body) {
   const r = await fetch(GAS_URL, {
     method: 'POST',
@@ -912,30 +658,26 @@ function setMinDates() {
 // ─────────────────────────────────────────────
 // RENDER ROOMS
 function renderRooms() {
-  const wrap   = document.getElementById('roomsScroll');
-  const freeN  = ROOMS.filter(r => roomStates[r]?.isFree !== false).length;
+  const wrap  = document.getElementById('roomsScroll');
+  const freeN = ROOMS.filter(r => roomStates[r]?.isFree !== false).length;
   document.getElementById('roomCountBadge').textContent = `${freeN} ว่าง`;
   document.getElementById('subTitle').textContent = freeN > 0 ? 'เลือกห้องพักที่ต้องการ' : 'ไม่มีห้องว่างขณะนี้';
-
   wrap.innerHTML = '';
+
   ROOMS.forEach(r => {
     const info  = ROOM_INFO[r];
     const isMine = pendingRoom === r;
     const isFree = roomStates[r]?.isFree !== false;
     const state  = isMine ? 'mine' : isFree ? 'free' : 'busy';
+    const thumb  = ROOM_IMAGES[r]?.[0] || '';
 
     let pill, btnTxt, btnCls = '', btnDis = false;
     if (isMine) {
-      pill   = `<span class="s-dot"></span>กำลังจอง`;
-      btnTxt = '📝 กรอกข้อมูล';
-      btnCls = 'fill-btn';
+      pill = `<span class="s-dot"></span>กำลังจอง`; btnTxt = '📝 กรอกข้อมูล'; btnCls = 'fill-btn';
     } else if (isFree) {
-      pill   = `<span class="s-dot"></span>ว่าง`;
-      btnTxt = 'จองเลย';
+      pill = `<span class="s-dot"></span>ว่าง`; btnTxt = 'จองเลย';
     } else {
-      pill   = `<span class="s-dot"></span>ไม่ว่าง`;
-      btnTxt = 'ไม่ว่าง';
-      btnDis = true;
+      pill = `<span class="s-dot"></span>ไม่ว่าง`; btnTxt = 'ไม่ว่าง'; btnDis = true;
     }
 
     const card = document.createElement('div');
@@ -944,15 +686,20 @@ function renderRooms() {
     card.onclick = () => openGallery(r);
     card.innerHTML = `
       <div class="card-inner">
-        <div class="card-letter">${r}</div>
-        <div class="card-info">
-          <div class="card-name">${info.name}</div>
-          <div class="card-desc">${info.desc}</div>
-          <div class="card-tags">${info.tags.map(t=>`<span class="ctag">${t}</span>`).join('')}</div>
-        </div>
-        <div class="card-right">
-          <span class="status-pill pill-${state === 'mine' ? 'mine' : state === 'free' ? 'free' : 'busy'}">${pill}</span>
-          <button class="book-btn ${btnCls}" ${btnDis?'disabled':''} onclick="onBookClick(event,'${r}')">${btnTxt}</button>
+        ${thumb
+          ? `<img class="card-thumb" src="${thumb}" alt="ห้อง ${r}" loading="lazy">`
+          : `<div class="card-thumb-placeholder">${r}</div>`
+        }
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-name">${info.name}</div>
+            <div class="card-desc">${info.desc}</div>
+            <div class="card-tags">${info.tags.map(t=>`<span class="ctag">${t}</span>`).join('')}</div>
+          </div>
+          <div class="card-right">
+            <span class="status-pill pill-${state === 'mine' ? 'mine' : state === 'free' ? 'free' : 'busy'}">${pill}</span>
+            <button class="book-btn ${btnCls}" ${btnDis?'disabled':''} onclick="onBookClick(event,'${r}')">${btnTxt}</button>
+          </div>
         </div>
       </div>`;
     wrap.appendChild(card);
@@ -960,71 +707,120 @@ function renderRooms() {
 }
 
 // ─────────────────────────────────────────────
+// BOOK CLICK — แสดง bottom sheet ก่อน
+function onBookClick(e, room) {
+  e.stopPropagation();
+  if (pendingRoom) {
+    if (pendingRoom === room) { openForm(); return; }
+    toast('info', `⏳ มีการจองห้อง ${pendingRoom} ค้างอยู่`);
+    return;
+  }
+  openConfirmSheet(room);
+}
+
+// ── CONFIRM SHEET ──
+function openConfirmSheet(room) {
+  const info = ROOM_INFO[room];
+  pendingConfirmRoom = room;
+  document.getElementById('confirmLetter').textContent   = room;
+  document.getElementById('confirmRoomName').textContent = info.name;
+  document.getElementById('confirmRoomSub').textContent  = info.desc;
+  document.getElementById('confirmSheet').classList.add('open');
+}
+
+function closeConfirmSheet() {
+  document.getElementById('confirmSheet').classList.remove('open');
+  pendingConfirmRoom = null;
+}
+
+function onSheetBgClick(e) {
+  if (e.target === document.getElementById('confirmSheet')) closeConfirmSheet();
+}
+
+async function doConfirmBook() {
+  const room = pendingConfirmRoom;
+  if (!room) return;
+  closeConfirmSheet();
+
+  // ล็อค button ในการ์ด
+  const btn = document.querySelector(`#card-${room} .book-btn`);
+  if (btn) { btn.disabled = true; btn.textContent = '...'; }
+
+  try {
+    const d = await gasPost({ type: 'QUICK_BOOK', userId, room });
+    if (!d.success) {
+      toast('err', `❌ ${d.message || 'จองไม่สำเร็จ'}`);
+      if (btn) { btn.disabled = false; btn.textContent = 'จองเลย'; }
+      return;
+    }
+    pendingRoom = room;
+    pendingEid  = d.eventId;
+    bookedAt    = d.alreadyPending
+      ? Date.now() - (DEADLINE_MIN - d.remaining) * 60000
+      : Date.now();
+
+    if (roomStates[room]) roomStates[room].isFree = false;
+    startTimer();
+    renderRooms();
+    openForm();
+  } catch(err) {
+    toast('err', '❌ เกิดข้อผิดพลาด กรุณาลองใหม่');
+    if (btn) { btn.disabled = false; btn.textContent = 'จองเลย'; }
+  }
+}
+
+// ─────────────────────────────────────────────
 // GALLERY
 function openGallery(room) {
   currentGalleryRoom = room;
   currentSlide = 0;
-  
-  const info = ROOM_INFO[room];
+  const info   = ROOM_INFO[room];
   const images = ROOM_IMAGES[room] || [];
-  
-  // Update header
-  document.getElementById('galleryRoomName').textContent = `ห้อง ${room}`;
-  document.getElementById('galleryRoomDesc').textContent = 'แตะเพื่อดูรูปภาพ';
-  
-  // Update info section
-  document.getElementById('galleryFullName').textContent = info.name;
-  document.getElementById('galleryFullDesc').textContent = info.desc;
-  
-  // Tags
-  const tagsWrap = document.getElementById('galleryTags');
-  tagsWrap.innerHTML = info.tags.map(t => `<span class="gallery-tag">${t}</span>`).join('');
-  
-  // Render slides
+
+  document.getElementById('galleryRoomName').textContent  = `ห้อง ${room}`;
+  document.getElementById('galleryRoomDesc').textContent  = `${images.length} รูป`;
+  document.getElementById('galleryFullName').textContent  = info.name;
+  document.getElementById('galleryFullDesc').textContent  = info.desc;
+  document.getElementById('galleryTags').innerHTML        = info.tags.map(t=>`<span class="gallery-tag">${t}</span>`).join('');
+
   const slider = document.getElementById('gallerySlider');
-  slider.innerHTML = images.map(img => 
+  slider.innerHTML = images.map(img =>
     `<div class="gallery-slide"><img src="${img}" alt="ห้อง ${room}"></div>`
   ).join('');
-  
-  // Render dots
+  slider.style.transform = 'translateX(0)';
+
   const dots = document.getElementById('galleryDots');
-  dots.innerHTML = images.map((_, i) => 
-    `<div class="gallery-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></div>`
+  dots.innerHTML = images.map((_,i) =>
+    `<div class="gallery-dot ${i===0?'active':''}" onclick="goToSlide(${i})"></div>`
   ).join('');
-  
-  // Actions
-  const isMine = pendingRoom === room;
-  const isFree = roomStates[room]?.isFree !== false;
-  const actionsWrap = document.getElementById('galleryActions');
-  
-  if (isMine) {
-    actionsWrap.innerHTML = `
-      <button class="gallery-btn gallery-btn-fill" onclick="openFormFromGallery()">
-        📝 กรอกข้อมูล
-      </button>
-    `;
-  } else if (isFree) {
-    actionsWrap.innerHTML = `
-      <button class="gallery-btn gallery-btn-book" onclick="bookFromGallery()">
-        ✨ จองห้องนี้
-      </button>
-    `;
-  } else {
-    actionsWrap.innerHTML = `
-      <button class="gallery-btn" disabled>
-        🔒 ห้องไม่ว่าง
-      </button>
-    `;
-  }
-  
+
+  // Actions — ใช้ room ที่บันทึกไว้ใน currentGalleryRoom ตรงๆ
+  renderGalleryActions(room);
   updateSlideButtons();
+
   show('screen-gallery');
   hide('screen-main');
-  
-  // Touch events for swipe
-  const sliderEl = document.getElementById('gallerySlider');
-  sliderEl.addEventListener('touchstart', handleTouchStart, false);
-  sliderEl.addEventListener('touchend', handleTouchEnd, false);
+
+  // Touch swipe
+  slider.ontouchstart = e => { touchStartX = e.changedTouches[0].screenX; };
+  slider.ontouchend   = e => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    if (dx < -50) slideGallery(1);
+    if (dx >  50) slideGallery(-1);
+  };
+}
+
+function renderGalleryActions(room) {
+  const isMine = pendingRoom === room;
+  const isFree = roomStates[room]?.isFree !== false;
+  const wrap   = document.getElementById('galleryActions');
+  if (isMine) {
+    wrap.innerHTML = `<button class="gallery-btn gallery-btn-fill" onclick="openFormFromGallery()">📝 กรอกข้อมูล</button>`;
+  } else if (isFree) {
+    wrap.innerHTML = `<button class="gallery-btn gallery-btn-book" onclick="bookFromGallery()">✨ จองห้องนี้</button>`;
+  } else {
+    wrap.innerHTML = `<button class="gallery-btn" disabled>🔒 ห้องไม่ว่าง</button>`;
+  }
 }
 
 function closeGallery() {
@@ -1045,14 +841,8 @@ function goToSlide(index) {
 }
 
 function updateGallerySlide() {
-  const slider = document.getElementById('gallerySlider');
-  slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-  
-  // Update dots
-  document.querySelectorAll('.gallery-dot').forEach((dot, i) => {
-    dot.classList.toggle('active', i === currentSlide);
-  });
-  
+  document.getElementById('gallerySlider').style.transform = `translateX(-${currentSlide * 100}%)`;
+  document.querySelectorAll('.gallery-dot').forEach((d,i) => d.classList.toggle('active', i === currentSlide));
   updateSlideButtons();
 }
 
@@ -1062,72 +852,22 @@ function updateSlideButtons() {
   document.getElementById('galleryNext').disabled = currentSlide === images.length - 1;
 }
 
-function handleTouchStart(e) {
-  touchStartX = e.changedTouches[0].screenX;
-}
-
-function handleTouchEnd(e) {
-  touchEndX = e.changedTouches[0].screenX;
-  handleSwipe();
-}
-
-function handleSwipe() {
-  if (touchEndX < touchStartX - 50) {
-    slideGallery(1); // Swipe left
-  }
-  if (touchEndX > touchStartX + 50) {
-    slideGallery(-1); // Swipe right
-  }
-}
-
-async function bookFromGallery() {
+// FIX: เก็บ room ก่อน close แล้วค่อย openConfirmSheet
+function bookFromGallery() {
+  const room = currentGalleryRoom; // บันทึกก่อน
   closeGallery();
-  const btn = document.querySelector(`#card-${currentGalleryRoom} .book-btn`);
-  if (btn && !btn.disabled) {
-    btn.click();
-  }
-}
-
-function openFormFromGallery() {
-  closeGallery();
-  openForm();
-}
-
-// ─────────────────────────────────────────────
-// BOOK CLICK
-async function onBookClick(e, room) {
-  e.stopPropagation();
-
   if (pendingRoom) {
     if (pendingRoom === room) { openForm(); return; }
     toast('info', `⏳ มีการจองห้อง ${pendingRoom} ค้างอยู่`);
     return;
   }
+  openConfirmSheet(room); // ใช้ room ที่บันทึกไว้
+}
 
-  const btn = e.currentTarget;
-  btn.disabled = true;
-  btn.textContent = '...';
-
-  try {
-    const d = await gasPost({ type: 'QUICK_BOOK', userId, room });
-    if (!d.success) {
-      toast('err', `❌ ${d.message || 'จองไม่สำเร็จ'}`);
-      btn.disabled = false; btn.textContent = 'จองเลย'; return;
-    }
-    pendingRoom = room;
-    pendingEid  = d.eventId;
-    bookedAt    = d.alreadyPending
-      ? Date.now() - (DEADLINE_MIN - d.remaining) * 60000
-      : Date.now();
-
-    if (roomStates[room]) roomStates[room].isFree = false;
-    startTimer();
-    renderRooms();
-    openForm();
-  } catch(e) {
-    toast('err', '❌ เกิดข้อผิดพลาด กรุณาลองใหม่');
-    btn.disabled = false; btn.textContent = 'จองเลย';
-  }
+function openFormFromGallery() {
+  closeGallery();
+  if (pendingRoom) openForm();
+  else toast('err', '❌ ไม่พบการจอง');
 }
 
 // ─────────────────────────────────────────────
@@ -1163,8 +903,8 @@ function startTimer() {
   strip.classList.add('on');
   document.getElementById('timerRoomLbl').textContent = `ห้อง ${pendingRoom} — กำลังจอง`;
   clearInterval(timerIv);
+  tickTimer(); // อัปเดตทันที ไม่รอ 1 วิ
   timerIv = setInterval(tickTimer, 1000);
-  tickTimer();
 }
 function tickTimer() {
   if (!bookedAt) return;
@@ -1172,10 +912,10 @@ function tickTimer() {
   if (left <= 0) { onExpired(); return; }
   const s = String(Math.floor(left/60)).padStart(2,'0') + ':' + String(left%60).padStart(2,'0');
   const urgent = left <= 120;
-  document.getElementById('timerVal').textContent      = s;
-  document.getElementById('timerVal').className        = 'timer-val' + (urgent ? ' urgent' : '');
-  document.getElementById('formTimerVal').textContent  = s;
-  document.getElementById('formTimerVal').className    = 'form-timer-val' + (urgent ? ' urgent' : '');
+  ['timerVal','formTimerVal'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = s; el.className = (id==='timerVal'?'timer-val':'form-timer-val') + (urgent?' urgent':''); }
+  });
 }
 function clearTimer() {
   clearInterval(timerIv);
@@ -1196,6 +936,7 @@ function openForm() {
   show('screen-form');
   hide('screen-main');
   hide('screen-gallery');
+  tickTimer(); // sync เวลาทันทีที่เปิดฟอร์ม
 }
 function backToMain() {
   show('screen-main');
@@ -1208,18 +949,15 @@ function onDateChange() {
   const ciT = document.getElementById('fciTime').value || '14:00';
   const coD = document.getElementById('fcoDate').value;
   const coT = document.getElementById('fcoTime').value || '12:00';
-
   const row = document.getElementById('nightsRow');
   if (!ciD || !coD) { row.style.display = 'none'; return; }
-
   const ci = new Date(`${ciD}T${ciT}`);
   const co = new Date(`${coD}T${coT}`);
   const n  = Math.round((co - ci) / 86400000);
-
   if (n > 0) {
-    document.getElementById('nightsVal').textContent  = n;
-    document.getElementById('ciDisplay').textContent  = `${ciD} ${ciT}`;
-    document.getElementById('coDisplay').textContent  = `${coD} ${coT}`;
+    document.getElementById('nightsVal').textContent = n;
+    document.getElementById('ciDisplay').textContent = `${ciD} ${ciT}`;
+    document.getElementById('coDisplay').textContent = `${coD} ${coT}`;
     row.style.display = 'flex';
     document.getElementById('fcoDate').min = ciD;
   } else {
@@ -1230,7 +968,7 @@ function onDateChange() {
 function previewSlip(e) {
   const f = e.target.files[0];
   if (!f) return;
-  if (f.size > 5 * 1024 * 1024) { alert('❌ ไฟล์ใหญ่เกิน 5MB'); e.target.value = ''; return; }
+  if (f.size > 5*1024*1024) { alert('❌ ไฟล์ใหญ่เกิน 5MB'); e.target.value = ''; return; }
   const r = new FileReader();
   r.onload = ev => {
     document.getElementById('slipImg').src = ev.target.result;
@@ -1251,15 +989,15 @@ async function submitBooking() {
   const coT   = document.getElementById('fcoTime').value || '12:00';
   const file  = document.getElementById('fslip').files[0];
 
-  if (!name)                               return alert('❌ กรุณากรอกชื่อ-นามสกุล');
+  if (!name)                                   return alert('❌ กรุณากรอกชื่อ-นามสกุล');
   if (!phone || !/^[0-9]{9,10}$/.test(phone)) return alert('❌ กรุณากรอกเบอร์โทรให้ถูกต้อง');
-  if (!ciD)                                return alert('❌ กรุณาเลือกวันเช็คอิน');
-  if (!coD)                                return alert('❌ กรุณาเลือกวันเช็คเอาท์');
+  if (!ciD)                                    return alert('❌ กรุณาเลือกวันเช็คอิน');
+  if (!coD)                                    return alert('❌ กรุณาเลือกวันเช็คเอาท์');
   const ci = new Date(`${ciD}T${ciT}`);
   const co = new Date(`${coD}T${coT}`);
-  if (ci >= co)                            return alert('❌ วันเช็คเอาท์ต้องหลังวันเช็คอิน');
-  if (!file)                               return alert('❌ กรุณาแนบสลิปการโอนเงิน');
-  if (!pendingRoom)                        return alert('❌ ไม่พบการจอง กรุณาจองใหม่');
+  if (ci >= co)                                return alert('❌ วันเช็คเอาท์ต้องหลังวันเช็คอิน');
+  if (!file)                                   return alert('❌ กรุณาแนบสลิปการโอนเงิน');
+  if (!pendingRoom)                            return alert('❌ ไม่พบการจอง กรุณาจองใหม่');
 
   const btn = document.getElementById('btnSubmit');
   btn.disabled = true;
@@ -1269,18 +1007,16 @@ async function submitBooking() {
   try {
     const b64 = await toBase64(file);
     const fd  = new FormData(); fd.append('image', b64);
-    const ir  = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: 'POST', body: fd });
+    const ir  = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method:'POST', body:fd });
     const id  = await ir.json();
     if (!id.success) throw new Error('อัปโหลดสลิปไม่สำเร็จ');
 
     document.getElementById('btnTxt').textContent = 'กำลังบันทึก...';
-
     const d = await gasPost({
-      type: 'LIFF_BOOKING', userId,
-      room: pendingRoom, name, phone,
-      checkIn:  ci.toISOString(),
-      checkOut: co.toISOString(),
-      slipUrl: id.data.url
+      type:'LIFF_BOOKING', userId,
+      room:pendingRoom, name, phone,
+      checkIn:ci.toISOString(), checkOut:co.toISOString(),
+      slipUrl:id.data.url
     });
 
     if (d.success) {
@@ -1309,7 +1045,7 @@ async function submitBooking() {
 }
 
 function toBase64(file) {
-  return new Promise((res, rej) => {
+  return new Promise((res,rej) => {
     const r = new FileReader();
     r.onload  = () => res(r.result.split(',')[1]);
     r.onerror = () => rej(new Error('อ่านไฟล์ไม่ได้'));
@@ -1318,7 +1054,6 @@ function toBase64(file) {
 }
 
 // ─────────────────────────────────────────────
-// UTILS
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
 function hide(id) { document.getElementById(id).classList.add('hidden'); }
 
